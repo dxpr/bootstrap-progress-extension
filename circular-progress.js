@@ -1,4 +1,4 @@
-// Function to set the progress of a circular progress bar
+// Simple function to set a circular progress bar percentage
 function setCircularProgress(element, percent) {
   // Calculate the angle based on percentage (0-100)
   const angle = percent * 3.6; // 3.6 = 360 / 100
@@ -6,12 +6,6 @@ function setCircularProgress(element, percent) {
   // Get the progress element
   const progressElement = element.querySelector('.circle-progress');
   if (!progressElement) return;
-  
-  // Update the aria attribute
-  const progressBar = element.closest('.progress');
-  if (progressBar) {
-    progressBar.setAttribute('aria-valuenow', percent);
-  }
   
   // Update the text percentage
   const textElement = element.querySelector('.progress-label');
@@ -32,70 +26,59 @@ function setCircularProgress(element, percent) {
     arcColor = 'var(--bs-info)';
   }
   
-  // Apply the conic gradient with the correct color and angle
+  // Apply the conic gradient directly with the correct color and angle
   progressElement.style.background = `conic-gradient(${arcColor} 0deg, ${arcColor} ${angle}deg, var(--bs-gray-200) ${angle}deg, var(--bs-gray-200) 360deg)`;
 }
 
-// Add interactive controls to update progress bars
-document.addEventListener('DOMContentLoaded', function() {
-  // Add a range input to control all circular progress bars
-  const controls = document.createElement('div');
-  controls.className = 'mt-4 text-center';
-  controls.innerHTML = `
-    <label for="progress-control" class="form-label">Control Circle Progress</label>
-    <input type="range" class="form-range w-50 mx-auto" id="progress-control" min="0" max="100" value="50">
-  `;
+// Animate a single progress bar
+function animateProgressBar(element, targetValue, duration = 1000) {
+  let startTimestamp = null;
+  const startValue = 0;
   
-  // Find the circular progress container and append controls
-  const circularSection = document.querySelector('.section:last-child');
-  circularSection.appendChild(controls);
-  
-  // Get all circular progress elements
-  const circleProgressElements = document.querySelectorAll('.progress.circular .progress-bar');
-  
-  // Set initial values based on aria-valuenow
-  circleProgressElements.forEach((element) => {
-    const progressBar = element.closest('.progress');
-    const initialValue = parseInt(progressBar.getAttribute('aria-valuenow'));
-    setCircularProgress(element, initialValue);
-  });
-  
-  // Add event listener to range input
-  const rangeInput = document.getElementById('progress-control');
-  rangeInput.addEventListener('input', function() {
-    const percent = parseInt(this.value);
+  // Animation step function
+  function step(timestamp) {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const elapsed = timestamp - startTimestamp;
+    const progress = Math.min(elapsed / duration, 1);
+    const currentValue = Math.floor(startValue + progress * (targetValue - startValue));
     
-    // Update all circular progress bars
-    circleProgressElements.forEach(element => {
-      setCircularProgress(element, percent);
-    });
+    setCircularProgress(element, currentValue);
+    
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  }
+  
+  // Start animation
+  window.requestAnimationFrame(step);
+}
+
+// Main function to initialize and animate all progress bars
+function initializeProgressBars() {
+  // Get all circular progress bars
+  const progressBars = document.querySelectorAll('.progress.circular .progress-bar');
+  
+  // Set initial state to 0 for all
+  progressBars.forEach(bar => {
+    setCircularProgress(bar, 0);
   });
   
-  // Add button to animate progress
-  const animateButton = document.createElement('button');
-  animateButton.className = 'btn btn-primary mt-3';
-  animateButton.textContent = 'Animate Progress';
-  
-  // Add button to the controls
-  controls.appendChild(animateButton);
-  
-  // Add animation functionality
-  animateButton.addEventListener('click', function() {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 1;
-      if (progress > 100) {
-        clearInterval(interval);
-        return;
-      }
-      
-      // Update range input
-      rangeInput.value = progress;
-      
-      // Update all circular progress bars
-      circleProgressElements.forEach(element => {
-        setCircularProgress(element, progress);
-      });
-    }, 30);
+  // Start animations with staggered delay
+  progressBars.forEach((bar, index) => {
+    const progressContainer = bar.closest('.progress');
+    const targetValue = parseInt(progressContainer.getAttribute('aria-valuenow'), 10);
+    
+    // Stagger the animations slightly
+    setTimeout(() => {
+      animateProgressBar(bar, targetValue, 1500);
+    }, index * 200);
   });
-}); 
+}
+
+// Run when the DOM is fully loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeProgressBars);
+} else {
+  // DOM already loaded
+  initializeProgressBars();
+} 

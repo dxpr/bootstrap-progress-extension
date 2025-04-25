@@ -1,9 +1,24 @@
+:root {
+  --circle-thickness: 10px; /* Default thickness for circular progress bars */
+  --progress-thin: 5px;
+  --progress-thick: 15px;
+}
+
 .section {
   margin-bottom: 3rem;
 }
 .progress-container {
   margin-bottom: 1.5rem;
 }
+
+/* Progress bar thickness classes for horizontal bars */
+.progress.thickness-thin {
+  height: var(--progress-thin);
+}
+.progress.thickness-thick {
+  height: var(--progress-thick);
+}
+
 /* Circular progress bar styles */
 .progress.circular {
   width: 120px;
@@ -52,10 +67,10 @@
 .circle-progress::before {
   content: '';
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
+  top: var(--circle-thickness);
+  left: var(--circle-thickness);
+  right: var(--circle-thickness);
+  bottom: var(--circle-thickness);
   background: var(--bs-white);
   border-radius: 50%;
 }
@@ -78,6 +93,12 @@
 .progress.circular .progress-bar.bg-info .progress-label {
   color: #212529; /* Bootstrap default text color */
 }
+
+/* Ensure text is dark for light background */
+.progress.circular .progress-bar.bg-light .progress-label {
+  color: var(--bs-dark);
+}
+
 .circular-title {
   text-align: center;
   margin-top: 10px;
@@ -96,4 +117,18 @@
 }
 .form-range::-ms-thumb {
   background: var(--bs-primary);
+}
+
+/* Thickness variations */
+.thickness-thin {
+  --circle-thickness: 5px;
+}
+.thickness-medium {
+  --circle-thickness: 10px;
+}
+.thickness-thick {
+  --circle-thickness: 15px;
+}
+.thickness-extra-thick {
+  --circle-thickness: 20px;
 } 

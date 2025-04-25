@@ -12,10 +12,10 @@
 }
 
 /* Progress bar thickness classes for horizontal bars */
-.progress.thickness-thin {
+.progress.thickness-5px {
   height: var(--progress-thin);
 }
-.progress.thickness-thick {
+.progress.thickness-15px {
   height: var(--progress-thick);
 }
 
@@ -120,15 +120,9 @@
 }
 
 /* Thickness variations */
-.thickness-thin {
+.thickness-5px {
   --circle-thickness: 5px;
 }
-.thickness-medium {
-  --circle-thickness: 10px;
-}
-.thickness-thick {
+.thickness-15px {
   --circle-thickness: 15px;
-}
-.thickness-extra-thick {
-  --circle-thickness: 20px;
 } 

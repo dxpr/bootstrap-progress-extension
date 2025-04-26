@@ -56,15 +56,17 @@ Include the CSS and JavaScript files in your project:
 
 ### Circular Progress Bar
 
-+ Note: The `<div class="progress-label">...</div>` element is required within the `.progress-bar` for circular progress bars.
-+
+- Note: The `<div class="progress-label">...</div>` element is required within the `.progress-bar` for circular progress bars.
+**Important:** For circular progress bars, you only need to include the standard `.progress` and `.progress-bar` elements, along with a `<div class="progress-label">...%</div>` inside the `.progress-bar`. 
+The decorative `<div class="circle-background"></div>` and `<div class="circle-progress"></div>` elements will be **automatically injected** by the script. **Do not include them in your source HTML.**
+
 ```html
 <div class="progress circular" role="progressbar" aria-label="Circular progress"
      aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
      data-bs-config='{"strokeWidth": 15, "animateInViewport": true}'>
   <div class="progress-bar bg-success">
     <div class="progress-label">75%</div>
-    <!-- .circle-background and .circle-progress are injected by JS -->
+    <!-- .circle-background and .circle-progress will be added here by the script -->
   </div>
 </div>
 ```

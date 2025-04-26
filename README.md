@@ -138,7 +138,7 @@ The appearance of the circular progress bars can be customized using the followi
 | -------------------- | --------------------------------------------------------------------------- | ------------- | ----------------------- |
 | `--circle-size`      | The overall width and height of the circular progress component.            | `120px`       | `size` config option    |
 | `--circle-thickness` | The thickness of the progress ring.                                         | `15px`        | `strokeWidth` config option |
-| `--arc-color`        | The color of the progress arc. Determined by `bg-*` classes.                | `var(--bs-primary)` | `bg-*` CSS class        |
+| `--arc-color`        | The color of the progress arc. Determined by `bg-*` classes.                | `var(--bs-progress-bar-bg)` | `bg-*` CSS class        |
 | `--progress-angle`   | The calculated angle (0-360deg) representing the current progress visually. | `0deg`        | JavaScript (`setValue`) |
 
 **Note:** While `--arc-color` and `--progress-angle` are used internally, you typically control the appearance via the `data-bs-config` options (`size`, `strokeWidth`) and standard Bootstrap background utility classes (`bg-primary`, `bg-success`, etc.) rather than setting these CSS variables directly.
@@ -150,7 +150,7 @@ This extension leverages standard Bootstrap CSS variables for theming and consis
 | Bootstrap Variable      | How It's Used                                                                                                     |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `--bs-progress-bg`      | Background color for the track of standard progress bars and the inactive portion of the circular progress ring.    |
-| `--bs-primary`          | Default color for the active arc of circular progress bars (used when no specific `bg-*` class is applied).       |
+| `--bs-progress-bar-bg`  | Default color for the active arc of circular progress bars (used when no specific `bg-*` class is applied).       |
 | `--bs-success`          | Color for the active arc when `.bg-success` is used on the circular progress bar.                                |
 | `--bs-danger`           | Color for the active arc when `.bg-danger` is used on the circular progress bar.                                 |
 | `--bs-warning`          | Color for the active arc when `.bg-warning` is used on the circular progress bar.                                |

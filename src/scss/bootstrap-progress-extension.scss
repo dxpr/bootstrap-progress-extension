@@ -42,8 +42,8 @@ $progress-bar-label-size: 1.5rem !default;
       position: relative;
       border-radius: 50%;
 
-      // Define default arc color
-      --arc-color: var(--#{$prefix}primary);
+      // Define default arc color using Bootstrap's progress bar background variable
+      --arc-color: var(--#{$prefix}progress-bar-bg);
 
       // Override arc color based on background class
       &.bg-success { --arc-color: var(--#{$prefix}success); }

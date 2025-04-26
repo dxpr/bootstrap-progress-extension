@@ -1,23 +1,23 @@
 {
-  "name": "bootstrap-progress-bars",
+  "name": "bootstrap-progress-extension",
   "version": "1.0.0",
   "description": "Enhanced progress components with circular progress and animations for Bootstrap 5",
-  "main": "dist/js/bootstrap-progress-bars.js",
-  "style": "dist/css/bootstrap-progress-bars.css",
-  "sass": "src/scss/bootstrap-progress-bars.scss",
+  "main": "dist/js/bootstrap-progress-extension.js",
+  "style": "dist/css/bootstrap-progress-extension.css",
+  "sass": "src/scss/bootstrap-progress-extension.scss",
   "scripts": {
     "start": "npm run serve",
     "serve": "http-server -p 3123",
     "build": "npm run build:js && npm run build:scss",
     "build:js": "rollup -c",
-    "build:scss": "sass src/scss/bootstrap-progress-bars.scss dist/css/bootstrap-progress-bars.css --style compressed && sass src/scss/bootstrap-progress-bars.scss dist/css/bootstrap-progress-bars.min.css --style compressed",
+    "build:scss": "sass src/scss/bootstrap-progress-extension.scss dist/css/bootstrap-progress-extension.css --style compressed && sass src/scss/bootstrap-progress-extension.scss dist/css/bootstrap-progress-extension.min.css --style compressed",
     "watch": "nodemon --watch src --ext js,scss --exec \"npm run build\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/username/bootstrap-progress-bars.git"
+    "url": "https://github.com/username/bootstrap-progress-extension.git"
   },
   "keywords": [
     "bootstrap",
@@ -32,9 +32,9 @@
   "author": "Jurriaan Roelofs",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/username/bootstrap-progress-bars/issues"
+    "url": "https://github.com/username/bootstrap-progress-extension/issues"
   },
-  "homepage": "https://github.com/username/bootstrap-progress-bars#readme",
+  "homepage": "https://github.com/username/bootstrap-progress-extension#readme",
   "dependencies": {
     "bootstrap": "^5.3.0"
   },

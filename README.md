@@ -1,4 +1,4 @@
-# Bootstrap Progress Bars
+# Bootstrap Progress Bar Extension
 
 Enhanced progress components with circular progress and animations for Bootstrap 5.
 
@@ -6,7 +6,7 @@ Enhanced progress components with circular progress and animations for Bootstrap
 
 This package provides:
 
-- Standard Bootstrap progress bars with animation
+- Standard Bootstrap Progress Bar Extension with animation
 - Custom circular progress bars 
 - Viewport-based animation triggers
 - Configurable animation duration and delays
@@ -19,14 +19,14 @@ This package provides:
 ## Installation
 
 ```bash
-npm install bootstrap-progress-bars
+npm install bootstrap-progress-extension
 ```
 
 Include the CSS and JavaScript files in your project:
 
 ```html
-<link href="path/to/bootstrap-progress-bars.css" rel="stylesheet">
-<script src="path/to/bootstrap-progress-bars.js"></script>
+<link href="path/to/bootstrap-progress-extension.css" rel="stylesheet">
+<script src="path/to/bootstrap-progress-extension.js"></script>
 ```
 
 ## Usage
@@ -138,7 +138,7 @@ progressBar.initialize();
 
 ## Accessibility Features
 
-Bootstrap Progress Bars are built with accessibility in mind:
+Bootstrap Progress Bar Extension are built with accessibility in mind:
 
 - **ARIA Support**: All progress bars use proper ARIA attributes (`role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-label`)
 - **Reduced Motion**: Automatically respects the user's `prefers-reduced-motion` browser setting, disabling animations for users who prefer reduced motion

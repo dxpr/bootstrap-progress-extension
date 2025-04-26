@@ -13,10 +13,10 @@ const banner = `/*!
  */`;
 
 export default {
-  input: 'src/js/bootstrap-progress-bars.js',
+  input: 'src/js/bootstrap-progress-extension.js',
   output: [
     {
-      file: 'dist/js/bootstrap-progress-bars.js',
+      file: 'dist/js/bootstrap-progress-extension.js',
       format: 'umd',
       name: 'bootstrapProgressBars',
       banner,
@@ -25,12 +25,12 @@ export default {
       }
     },
     {
-      file: 'dist/js/bootstrap-progress-bars.esm.js',
+      file: 'dist/js/bootstrap-progress-extension.esm.js',
       format: 'esm',
       banner
     },
     {
-      file: 'dist/js/bootstrap-progress-bars.min.js',
+      file: 'dist/js/bootstrap-progress-extension.min.js',
       format: 'umd',
       name: 'bootstrapProgressBars',
       banner,

@@ -5,37 +5,18 @@
  */
 
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined'
-    ? module.exports = factory()
-    : typeof define === 'function' && define.amd
-      ? define(factory)
-      : (global = typeof globalThis !== 'undefined' ? globalThis : global || self,
-        global.ProgressBar = factory());
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.ProgressBar = factory());
 })(this, (function () {
   'use strict';
-
-  /**
-   * Constants
-   */
-  const NAME = 'progressBar';
-  const VERSION = '1.0.0';
-  const DATA_KEY = 'bs.progressBar';
-  const EVENT_KEY = `.${DATA_KEY}`;
-  
-  const EVENT_ANIMATION_START = `animation.start${EVENT_KEY}`;
-  const EVENT_ANIMATION_COMPLETE = `animation.complete${EVENT_KEY}`;
-  const EVENT_VALUE_CHANGED = `value.changed${EVENT_KEY}`;
-  
-  /**
-   * Default configuration
-   */
+  const NAME = 'progressBar', VERSION = '1.0.0', DATA_KEY = 'bs.progressBar', EVENT_KEY = `.${DATA_KEY}`;
   const Default = {
     duration: 1500,
-    easing: 'linear',
     animation: true,
     delay: 0,
     strokeWidth: 15,
-    size: 120,  // Default size matching SCSS variable
+    size: 120,
     animateInViewport: true
   };
 
@@ -61,10 +42,11 @@
       // Get and apply configuration first
       this._config = this._getConfig(config);
       if (this._isCircular) {
-        this._applyConfig(this._config);
+        if (this._config.strokeWidth) this._element.style.setProperty('--circle-thickness', `${this._config.strokeWidth}px`);
+        if (this._config.size) this._element.style.setProperty('--circle-size', `${this._config.size}px`);
       }
 
-      // Set remaining properties
+      // Parse value from aria-valuenow attribute
       this._targetValue = parseInt(element.getAttribute('aria-valuenow') || '0', 10);
       this._isAnimating = false;
       this._isInViewport = false;
@@ -110,19 +92,6 @@
       return Default;
     }
     
-    /**
-     * Event names object
-     * @static
-     * @type {object}
-     */
-    static get Event() {
-      return {
-        ANIMATION_START: EVENT_ANIMATION_START,
-        ANIMATION_COMPLETE: EVENT_ANIMATION_COMPLETE,
-        VALUE_CHANGED: EVENT_VALUE_CHANGED
-      };
-    }
-
     /**
      * Check if user prefers reduced motion
      * @static
@@ -174,11 +143,10 @@
         threshold: 0.5 // 50% of the element is visible
       };
       
-      const observer = new IntersectionObserver((entries) => {
+      this._observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && !this._hasBeenInViewport) {
-            this._isInViewport = true;
-            this._hasBeenInViewport = true;
+            this._isInViewport = this._hasBeenInViewport = true;
             
             // Start animation when in viewport
             if (this._config.animation && !ProgressBar.prefersReducedMotion) {
@@ -191,25 +159,12 @@
             }
             
             // Disconnect observer once animation has started
-            observer.disconnect();
+            this._observer.disconnect();
           }
         });
       }, options);
       
-      observer.observe(this._element);
-    }
-    
-    /**
-     * Apply stroke width to circular progress
-     * @private
-     * @param {number} width - Width in pixels
-     */
-    _applyStrokeWidth(width) {
-      // Remove any existing thickness classes
-      this._element.classList.remove('thickness-5px', 'thickness-15px');
-      
-      // Add a custom CSS variable for stroke width
-      this._element.style.setProperty('--circle-thickness', `${width}px`);
+      this._observer.observe(this._element);
     }
     
     /**
@@ -299,21 +254,6 @@
     }
     
     /**
-     * Dispatch custom event
-     * @private
-     * @param {string} eventName - Event name to dispatch
-     * @param {Object} detail - Event detail object
-     */
-    _dispatchEvent(eventName, detail = {}) {
-      const event = new CustomEvent(eventName, {
-        bubbles: true,
-        detail
-      });
-      
-      this._element.dispatchEvent(event);
-    }
-
-    /**
      * Check if animation should be disabled based on user preference
      * @private
      * @returns {boolean}
@@ -328,10 +268,7 @@
      * @public
      * @returns {ProgressBar} - Returns this instance for chaining
      */
-    initialize() {
-      this.setValue(0);
-      return this;
-    }
+    initialize() { return this.setValue(0); }
     
     /**
      * Set value without animation
@@ -341,15 +278,7 @@
      */
     setValue(percent) {
       percent = Math.min(Math.max(parseInt(percent, 10), 0), 100);
-      
-      if (this._isCircular) {
-        this._setCircularProgress(percent);
-      } else {
-        this._setHorizontalProgress(percent);
-      }
-      
-      this._dispatchEvent(EVENT_VALUE_CHANGED, { value: percent });
-      
+      this._isCircular ? this._setCircularProgress(percent) : this._setHorizontalProgress(percent);
       return this;
     }
     
@@ -362,48 +291,19 @@
      */
     animate(targetValue = null, customDuration = null) {
       if (this._isAnimating) return this;
-      
       const startValue = this._getCurrentValue();
-      this._targetValue = targetValue !== null ? Math.min(Math.max(parseInt(targetValue, 10), 0), 100) 
-                                            : this._targetValue;
-      const duration = customDuration || this._config.duration;
-      
+      // If no target value is provided, use the one from aria-valuenow
+      this._targetValue = targetValue !== null ? Math.min(Math.max(parseInt(targetValue, 10), 0), 100) : this._targetValue;
       if (startValue === this._targetValue) return this;
-      
-      // Check if animation should be disabled based on reduced motion preference
-      if (this._shouldDisableAnimation()) {
-        this.setValue(this._targetValue);
-        this._dispatchEvent(EVENT_ANIMATION_COMPLETE, {
-          value: this._targetValue
-        });
-        return this;
-      }
-      
+      if (ProgressBar.prefersReducedMotion) { this.setValue(this._targetValue); return this; }
       this._isAnimating = true;
-      const startTime = performance.now();
-      
-      this._dispatchEvent(EVENT_ANIMATION_START, {
-        startValue: startValue,
-        targetValue: this._targetValue
-      });
-
-      const animate = (timestamp) => {
-        const elapsed = timestamp - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const currentValue = Math.floor(startValue + progress * (this._targetValue - startValue));
-        
-        this.setValue(currentValue);
-        
-        if (progress < 1) {
-          window.requestAnimationFrame(animate);
-        } else {
-          this._isAnimating = false;
-          this._dispatchEvent(EVENT_ANIMATION_COMPLETE, {
-            value: this._targetValue
-          });
-        }
+      const startTime = performance.now(), duration = customDuration || this._config.duration;
+      const animate = timestamp => {
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        this.setValue(Math.floor(startValue + progress * (this._targetValue - startValue)));
+        if (progress < 1) window.requestAnimationFrame(animate);
+        else this._isAnimating = false;
       };
-      
       window.requestAnimationFrame(animate);
       return this;
     }
@@ -412,89 +312,20 @@
      * Dispose the progress bar instance
      * @public
      */
-    dispose() {
-      // Clean up event listeners, observers, etc.
-      this._element.progressBar = undefined;
-    }
-    
-    // Static methods
-    /**
-     * Get instance from element
-     * @static
-     * @param {HTMLElement} element - DOM element
-     * @returns {ProgressBar|null} - Instance or null if not found
-     */
-    static getInstance(element) {
-      return element.progressBar;
-    }
-    
-    /**
-     * Get or create instance
-     * @static
-     * @param {HTMLElement} element - DOM element
-     * @param {Object} config - Configuration options
-     * @returns {ProgressBar} - New or existing instance
-     */
-    static getOrCreateInstance(element, config = {}) {
-      return this.getInstance(element) || new this(element, config);
-    }
-
-    /**
-     * Initialize all progress bars in the document
-     * @static
-     */
-    static initializeAll() {
-      const progressBars = [...document.querySelectorAll('.progress')];
-      
-      progressBars.forEach(element => {
-        // Initialize each progress bar
-        ProgressBar.getOrCreateInstance(element);
-        
-        // If not using viewport animation, initialize values immediately
-        const progress = ProgressBar.getInstance(element);
-        
-        if (!progress._config.animateInViewport) {
-          progress.initialize();
-          
-          if (progress._config.animation && !ProgressBar.prefersReducedMotion) {
-            const delay = progress._config.delay || 0;
-            setTimeout(() => {
-              progress.animate(progress._targetValue);
-            }, delay);
-          } else {
-            progress.setValue(progress._targetValue);
-          }
-        } else {
-          // If using viewport animation, just initialize to 0 and wait for viewport
-          progress.initialize();
-        }
-      });
-    }
-
-    _applyConfig(config) {
-      // Apply stroke width if specified
-      if (config.strokeWidth) {
-        this._element.style.setProperty('--circle-thickness', `${config.strokeWidth}px`);
-      }
-
-      // Apply size if specified
-      if (config.size) {
-        this._element.style.setProperty('--circle-size', `${config.size}px`);
-      }
-      
-      // Store other config values
-      this._config = {
-        ...Default,
-        ...config
-      };
-    }
+    dispose() { this._element.progressBar = undefined; }
   }
 
-  /**
-   * Initialize on DOM content loaded
-   */
+  // Update the DOMContentLoaded handler
   document.addEventListener('DOMContentLoaded', () => {
-    ProgressBar.initializeAll();
+    document.querySelectorAll('.progress').forEach(element => {
+      const progress = new ProgressBar(element);
+      if (!progress._config.animateInViewport) {
+        progress.initialize();
+        if (progress._config.animation && !ProgressBar.prefersReducedMotion) {
+          setTimeout(() => progress.animate(progress._targetValue), progress._config.delay || 0);
+        } else progress.setValue(progress._targetValue);
+      } else progress.initialize();
+    });
   });
 
   return ProgressBar;

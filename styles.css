@@ -11,12 +11,9 @@
   margin-bottom: 1.5rem;
 }
 
-/* Progress bar thickness classes for horizontal bars */
-.progress.thickness-5px {
+/* Default progress bar height */
+.progress {
   height: var(--progress-thin);
-}
-.progress.thickness-15px {
-  height: var(--progress-thick);
 }
 
 /* Circular progress bar styles */

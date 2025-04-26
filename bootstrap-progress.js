@@ -21,7 +21,9 @@
         duration: 1500,
         easing: 'linear',
         animation: true,
-        delay: 0
+        delay: 0,
+        strokeWidth: null,
+        animateInViewport: true
       };
     }
     
@@ -47,6 +49,18 @@
       this._targetValue = parseInt(element.getAttribute('aria-valuenow'), 10);
       this._isAnimating = false;
       this._progressBar = element.querySelector('.progress-bar');
+      this._isInViewport = false;
+      this._hasBeenInViewport = false;
+      
+      // Set circle stroke width if specified in config
+      if (this._isCircular && this._config.strokeWidth) {
+        this._applyStrokeWidth(this._config.strokeWidth);
+      }
+
+      // Set up intersection observer for viewport-based animation
+      if (this._config.animateInViewport) {
+        this._setupIntersectionObserver();
+      }
       
       // Store instance in element's data
       element.bsProgress = this;
@@ -61,6 +75,7 @@
       
       // Process data-bs-config attribute if present (as JSON)
       const configAttr = this._element.getAttribute('data-bs-config');
+      
       if (configAttr) {
         try {
           const configJSON = JSON.parse(configAttr);
@@ -70,44 +85,50 @@
         }
       }
       
-      // Process individual data-bs-* attributes
-      const dataAttributeConfig = this._getDataAttributeConfig();
-      if (dataAttributeConfig) {
-        result = { ...result, ...dataAttributeConfig };
-      }
-      
       // Finally, add direct JS config options (highest precedence)
       result = { ...result, ...(config || {}) };
       
       return result;
     }
     
-    _getDataAttributeConfig() {
-      const config = {};
-      const element = this._element;
+    _setupIntersectionObserver() {
+      const options = {
+        root: null, // viewport
+        rootMargin: '0px',
+        threshold: 0.5 // 50% of the element is visible
+      };
       
-      // Check for duration attribute
-      if (element.hasAttribute('data-bs-duration')) {
-        config.duration = parseInt(element.getAttribute('data-bs-duration'), 10);
-      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !this._hasBeenInViewport) {
+            this._isInViewport = true;
+            this._hasBeenInViewport = true;
+            
+            // Start animation when in viewport
+            if (this._config.animation && !Progress.prefersReducedMotion) {
+              const delay = this._config.delay || 0;
+              setTimeout(() => {
+                this.animate(this._targetValue);
+              }, delay);
+            } else {
+              this.setValue(this._targetValue);
+            }
+            
+            // Disconnect observer once animation has started
+            observer.disconnect();
+          }
+        });
+      }, options);
       
-      // Check for animation attribute
-      if (element.hasAttribute('data-bs-animation')) {
-        const animValue = element.getAttribute('data-bs-animation');
-        config.animation = animValue !== 'false';
-      }
+      observer.observe(this._element);
+    }
+    
+    _applyStrokeWidth(width) {
+      // Remove any existing thickness classes
+      this._element.classList.remove('thickness-5px', 'thickness-15px');
       
-      // Check for delay attribute
-      if (element.hasAttribute('data-bs-delay')) {
-        config.delay = parseInt(element.getAttribute('data-bs-delay'), 10);
-      }
-      
-      // Check for easing attribute
-      if (element.hasAttribute('data-bs-easing')) {
-        config.easing = element.getAttribute('data-bs-easing');
-      }
-      
-      return config;
+      // Add a custom CSS variable for stroke width
+      this._element.style.setProperty('--circle-thickness', `${width}px`);
     }
     
     _getCurrentValue() {
@@ -261,23 +282,27 @@
   document.addEventListener('DOMContentLoaded', () => {
     const progressBars = [...document.querySelectorAll('.progress')];
     
-    progressBars.forEach((element, index) => {
-      const targetValue = parseInt(element.getAttribute('aria-valuenow'), 10);
-      const progress = Progress.getOrCreateInstance(element);
+    progressBars.forEach(element => {
+      // Initialize each progress bar
+      Progress.getOrCreateInstance(element);
       
-      progress.initialize();
+      // If not using viewport animation, initialize values immediately
+      const progress = Progress.getInstance(element);
       
-      // Check if animation is enabled based on config and respect browser preferences
-      if (progress._config.animation && !Progress.prefersReducedMotion) {
-        // Add delay based on index for staggered animation plus any configured delay
-        const staggerDelay = index * 200;
-        const configDelay = progress._config.delay || 0;
+      if (!progress._config.animateInViewport) {
+        progress.initialize();
         
-        setTimeout(() => {
-          progress.animate(targetValue);
-        }, staggerDelay + configDelay);
+        if (progress._config.animation && !Progress.prefersReducedMotion) {
+          const delay = progress._config.delay || 0;
+          setTimeout(() => {
+            progress.animate(progress._targetValue);
+          }, delay);
+        } else {
+          progress.setValue(progress._targetValue);
+        }
       } else {
-        progress.setValue(targetValue);
+        // If using viewport animation, just initialize to 0 and wait for viewport
+        progress.initialize();
       }
     });
   });

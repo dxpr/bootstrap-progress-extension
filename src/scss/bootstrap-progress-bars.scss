@@ -1,0 +1,170 @@
+/**
+ * Bootstrap Progress Bars
+ * Enhanced progress components with circular progress and animations
+ */
+
+// Import Bootstrap functions and mixins needed for responsive breakpoints
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+
+// Bootstrap Progress Bars Variables
+$progress-bar-circle-thickness: 15px !default;
+$progress-bar-thin: 5px !default;
+$progress-bar-thick: 15px !default;
+$progress-bar-circle-size: 120px !default;
+$progress-bar-label-size: 1.5rem !default;
+
+// Component Styles
+.progress {
+  // Default progress bar height
+  height: $progress-bar-thin;
+  background-color: var(--#{$prefix}progress-bg);
+}
+
+// Circular progress bar styles
+.progress.circular {
+  width: $progress-bar-circle-size;
+  height: $progress-bar-circle-size;
+  position: relative;
+  margin: 20px;
+  background: var(--#{$prefix}progress-bg);
+  overflow: visible;
+  border-radius: 50%;
+
+  .progress-bar {
+    width: 100%;
+    height: 100%;
+    background: none;
+    position: relative;
+    border-radius: 50%;
+
+    // Context-specific background colors
+    &.bg-success,
+    &.bg-danger,
+    &.bg-info {
+      .circle-background {
+        background-color: var(--#{$prefix}progress-bg);
+      }
+
+      .progress-label {
+        color: var(--#{$prefix}body-color);
+      }
+    }
+
+    // Light background needs dark text
+    &.bg-light .progress-label {
+      color: var(--#{$prefix}dark);
+    }
+  }
+}
+
+// Base circle
+.circle-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--#{$prefix}progress-bg);
+  display: none;
+}
+
+// Arc for the progress indicator
+.circle-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  border-radius: 50%;
+  transform: rotate(-90deg); // Start from the top instead of right
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: var(--circle-thickness, $progress-bar-circle-thickness);
+    left: var(--circle-thickness, $progress-bar-circle-thickness);
+    right: var(--circle-thickness, $progress-bar-circle-thickness);
+    bottom: var(--circle-thickness, $progress-bar-circle-thickness);
+    background: var(--#{$prefix}body-bg);
+    border-radius: 50%;
+  }
+}
+
+// Text label
+.progress-label {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+  font-size: $progress-bar-label-size;
+  font-weight: bold;
+  z-index: 10;
+  color: var(--#{$prefix}body-color);
+}
+
+// Title below progress bar
+.circular-title {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+// Container for multiple progress bars
+.progress-container {
+  margin-bottom: 1.5rem;
+}
+
+// Section container
+.section {
+  margin-bottom: 3rem;
+}
+
+// Theme switcher styles
+.theme-switcher {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1030;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--#{$prefix}body-bg);
+  box-shadow: 0 0.125rem 0.25rem var(--#{$prefix}box-shadow-sm);
+  border: 1px solid var(--#{$prefix}border-color);
+  
+  .btn-check {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+  }
+  
+  .btn-check:checked + .btn-outline-secondary {
+    color: var(--#{$prefix}white);
+    background-color: var(--#{$prefix}secondary);
+    border-color: var(--#{$prefix}secondary);
+  }
+}
+
+// Responsive adjustments
+@include media-breakpoint-down(sm) {
+  .progress.circular {
+    width: $progress-bar-circle-size * 0.8;
+    height: $progress-bar-circle-size * 0.8;
+    margin: 15px auto;
+  }
+
+  .progress-label {
+    font-size: $progress-bar-label-size * 0.8;
+  }
+  
+  .theme-switcher {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem;
+  }
+} 

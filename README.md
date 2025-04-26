@@ -1,69 +1,136 @@
-# Bootstrap Circular Progress Bar Demo
+# Bootstrap Progress Bars
 
-A demonstration of Bootstrap 5.3's progress components with custom circular progress bars.
+Enhanced progress components with circular progress and animations for Bootstrap 5.
 
 ## Features
 
-This demo showcases:
+This package provides:
 
-- Basic progress bars
-- Progress bars with labels
-- Height variations
-- Colored progress bars (success, info, warning, danger)
-- Striped progress bars
-- Animated striped progress bars
-- Multiple progress bars in a single container
-- Custom circular progress bars with interactive controls
+- Standard Bootstrap progress bars with animation
+- Custom circular progress bars 
+- Viewport-based animation triggers
+- Configurable animation duration and delays
+- Multiple color variants (primary, success, info, warning, danger)
+- Stroke width customization for circular progress
+- Built-in accessibility features
+
+## Installation
+
+```bash
+npm install bootstrap-progress-bars
+```
+
+Include the CSS and JavaScript files in your project:
+
+```html
+<link href="path/to/bootstrap-progress-bars.css" rel="stylesheet">
+<script src="path/to/bootstrap-progress-bars.js"></script>
+```
 
 ## Usage
 
-1. Simply open `index.html` in a web browser to view the demonstration.
-2. The circular progress bars at the bottom of the page include:
-   - A slider to manually adjust all circular progress bars simultaneously
-   - An "Animate Progress" button that animates the progress from 0% to 100%
-
-## Technical Implementation
-
-This demo uses:
-
-- Bootstrap 5.3.5 loaded from CDN
-- Custom CSS for circular progress bars using CSS pseudo-elements
-- JavaScript for interactive functionality of circular progress bars
-- Standard Bootstrap progress HTML structure for consistency
-
-## How It Works
-
-The circular progress bars are implemented using Bootstrap's standard HTML structure:
+### Basic Progress Bar
 
 ```html
-<div class="progress circular" role="progressbar" aria-label="Circular progress" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-  <div class="progress-bar">
-    <div class="progress-label">25%</div>
+<div class="progress" role="progressbar" aria-label="Basic example" 
+     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
+     data-bs-config='{"duration": 2000}'>
+  <div class="progress-bar" style="width: 0%"></div>
+</div>
+```
+
+### Circular Progress Bar
+
+```html
+<div class="progress circular" role="progressbar" aria-label="Circular progress"
+     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
+     data-bs-config='{"strokeWidth": 15, "animateInViewport": true}'>
+  <div class="progress-bar bg-success">
+    <div class="circle-background"></div>
+    <div class="circle-progress"></div>
+    <div class="progress-label">0%</div>
   </div>
 </div>
 ```
 
-Key features of the implementation:
+### RTL Support (Right-to-Left)
 
-- Uses the same HTML structure as standard Bootstrap progress bars for consistency
-- The circular appearance is achieved through CSS styling and pseudo-elements
-- Progress is visualized using a rotating semi-transparent border on a pseudo-element
-- The rotation calculation is `-90 + (percent / 100 * 360)` degrees, applied via CSS variables
-- Progress values are properly tracked with ARIA attributes for accessibility
+For RTL languages like Arabic, Hebrew, or Persian, simply wrap your progress bar in a container with `dir="rtl"`:
 
-## Customization
+```html
+<div dir="rtl">
+  <!-- Circular Progress in RTL -->
+  <div class="progress circular" role="progressbar" aria-label="تقدم دائري"
+       aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"
+       data-bs-config='{"strokeWidth": 15, "duration": 2000}'>
+    <div class="progress-bar bg-primary">
+      <div class="circle-background"></div>
+      <div class="circle-progress"></div>
+      <div class="progress-label">٦٥٪</div>
+    </div>
+  </div>
+  
+  <!-- Standard Progress Bar in RTL -->
+  <div class="progress" role="progressbar" aria-label="شريط التقدم"
+       aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
+       data-bs-config='{"duration": 1800}'>
+    <div class="progress-bar bg-success" style="width: 0%"></div>
+  </div>
+</div>
+```
 
-You can customize the circular progress bars by:
+## Configuration Options
 
-1. Changing the size by modifying the width and height in the CSS
-2. Adjusting colors by using Bootstrap's contextual classes (bg-success, bg-info, etc.)
-3. Modifying the border thickness in the ::before pseudo-element
+All progress components can be configured using the `data-bs-config` attribute with JSON:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `strokeWidth` | Number | `15` | Sets the stroke width in pixels for circular progress bars |
+| `duration` | Number | `1500` | Animation duration in milliseconds |
+| `delay` | Number | `0` | Delay before animation starts in milliseconds |
+| `animation` | Boolean | `true` | Whether to animate the progress |
+| `animateInViewport` | Boolean | `true` | Only animate when the element enters the viewport |
+
+## JavaScript API
+
+Get a progress bar instance:
+
+```javascript
+const progressElement = document.querySelector('.progress');
+const progressBar = ProgressBar.getInstance(progressElement);
+
+// Set value without animation
+progressBar.setValue(75);
+
+// Animate to value (target percentage, optional duration)
+progressBar.animate(90, 2000);
+
+// Event listeners
+progressElement.addEventListener('animation.complete.bs.progressBar', (e) => {
+  console.log('Animation completed with value:', e.detail.value);
+});
+```
+
+## Accessibility Features
+
+Bootstrap Progress Bars are built with accessibility in mind:
+
+- **ARIA Support**: All progress bars use proper ARIA attributes (`role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-label`)
+- **Reduced Motion**: Automatically respects the user's `prefers-reduced-motion` browser setting, disabling animations for users who prefer reduced motion
+- **Text Labels**: Circular progress bars include visible text labels showing the current progress percentage
+- **Color Contrast**: All components maintain proper contrast ratios between background, foreground, and text elements
+- **RTL Support**: Full support for right-to-left languages using the `dir="rtl"` attribute
+- **Keyboard Navigation**: The components can be controlled via JavaScript using keyboard-accessible controls
+- **Responsive Design**: Components adapt to different screen sizes for usability on mobile devices
 
 ## Browser Compatibility
 
-This demo works in all modern browsers that support:
-- CSS transforms
-- CSS variables
-- CSS pseudo-elements
-- Border radius
-- JavaScript ES6 features 
+- Chrome/Edge 60+
+- Firefox 60+
+- Safari 12+
+- iOS 12+
+- Not compatible with Internet Explorer
+
+## License
+
+MIT 

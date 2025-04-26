@@ -55,17 +55,19 @@
 
       this._element = element;
       this._isCircular = element.classList.contains('circular');
-      this._targetValue = parseInt(element.getAttribute('aria-valuenow') || '0', 10);
-      this._isAnimating = false;
       this._progressBar = element.querySelector('.progress-bar');
-      this._isInViewport = false;
-      this._hasBeenInViewport = false;
       
-      // Get and apply configuration
+      // Get and apply configuration first
       this._config = this._getConfig(config);
       if (this._isCircular) {
         this._applyConfig(this._config);
       }
+
+      // Set remaining properties
+      this._targetValue = parseInt(element.getAttribute('aria-valuenow') || '0', 10);
+      this._isAnimating = false;
+      this._isInViewport = false;
+      this._hasBeenInViewport = false;
 
       // Set up intersection observer for viewport-based animation
       if (this._config.animateInViewport) {

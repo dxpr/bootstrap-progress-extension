@@ -7,7 +7,7 @@ package-lock.json
 yarn.lock
 
 # Build files
-dist/
+# dist/
 coverage/
 
 # OS files

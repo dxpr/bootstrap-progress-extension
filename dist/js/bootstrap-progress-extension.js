@@ -1,0 +1,405 @@
+/*!
+ * bootstrap-progress-extension v1.0.0 (https://github.com/username/bootstrap-progress-extension#readme)
+ * Copyright 2025 Jurriaan Roelofs
+ * Licensed under MIT
+ */
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.bootstrapProgressBars = factory());
+})(this, (function () { 'use strict';
+
+	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+	function getDefaultExportFromCjs (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
+	var bootstrapProgressExtension$1 = {exports: {}};
+
+	/**
+	 * Bootstrap Progress Bar Extension - Enhanced progress bar component with circular progress and viewport animations
+	 * @version 1.0.0
+	 * @license MIT
+	 */
+	(function (module, exports) {
+	  (function (global, factory) {
+	    module.exports = factory() ;
+	  })(commonjsGlobal, function () {
+
+	    const VERSION = '1.0.0',
+	      DATA_KEY = 'bs.progressBar',
+	      EVENT_KEY = `.${DATA_KEY}`;
+	    const Default = {
+	      duration: 1500,
+	      animation: true,
+	      delay: 0,
+	      strokeWidth: 15,
+	      size: 120,
+	      animateInViewport: true
+	    };
+
+	    /**
+	     * ProgressBar Class Definition
+	     * @class
+	     */
+	    class ProgressBar {
+	      /**
+	       * ProgressBar constructor
+	       * @param {HTMLElement} element - The target element
+	       * @param {Object} config - Configuration options
+	       */
+	      constructor(element) {
+	        let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	        if (!element) {
+	          throw new Error('Element must be provided to ProgressBar constructor');
+	        }
+	        this._element = element;
+	        this._isCircular = element.classList.contains('circular');
+	        this._progressBar = element.querySelector('.progress-bar');
+
+	        // Get and apply configuration first
+	        this._config = this._getConfig(config);
+	        if (this._isCircular) {
+	          if (this._config.strokeWidth) this._element.style.setProperty('--circle-thickness', `${this._config.strokeWidth}px`);
+	          if (this._config.size) this._element.style.setProperty('--circle-size', `${this._config.size}px`);
+	        }
+
+	        // Parse value from aria-valuenow attribute
+	        this._targetValue = parseInt(element.getAttribute('aria-valuenow') || '0', 10);
+	        this._isAnimating = false;
+	        this._isInViewport = false;
+	        this._hasBeenInViewport = false;
+
+	        // Set up intersection observer for viewport-based animation
+	        if (this._config.animateInViewport) {
+	          this._setupIntersectionObserver();
+	        }
+
+	        // Store instance in element's data
+	        element.progressBar = this;
+
+	        // Mark as initialized
+	        element.setAttribute('data-bs-progress-initialized', 'true');
+	      }
+
+	      // Static properties
+	      /**
+	       * Version number
+	       * @static
+	       * @type {string}
+	       */
+	      static get VERSION() {
+	        return VERSION;
+	      }
+
+	      /**
+	       * Data attribute key for storing instance
+	       * @static
+	       * @type {string}
+	       */
+	      static get DATA_KEY() {
+	        return DATA_KEY;
+	      }
+
+	      /**
+	       * Event namespace
+	       * @static
+	       * @type {string}
+	       */
+	      static get EVENT_KEY() {
+	        return EVENT_KEY;
+	      }
+
+	      /**
+	       * Default configuration
+	       * @static
+	       * @type {object}
+	       */
+	      static get Default() {
+	        return Default;
+	      }
+
+	      /**
+	       * Check if user prefers reduced motion
+	       * @static
+	       * @returns {boolean}
+	       */
+	      static get prefersReducedMotion() {
+	        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	      }
+
+	      // Private methods
+	      /**
+	       * Get configuration with defaults and data attributes
+	       * @private
+	       * @param {Object} config - Configuration passed in constructor
+	       * @returns {Object} - Complete configuration
+	       */
+	      _getConfig(config) {
+	        // Get base config with defaults
+	        let result = {
+	          ...Default
+	        };
+
+	        // Process data-bs-config attribute if present (as JSON)
+	        const configAttr = this._element.getAttribute('data-bs-config');
+	        if (configAttr) {
+	          try {
+	            const configJSON = JSON.parse(configAttr);
+	            result = {
+	              ...result,
+	              ...configJSON
+	            };
+	          } catch (e) {
+	            console.error('Error parsing data-bs-config attribute:', e);
+	          }
+	        }
+
+	        // Finally, add direct JS config options (highest precedence)
+	        result = {
+	          ...result,
+	          ...(config || {})
+	        };
+	        return result;
+	      }
+
+	      /**
+	       * Set up intersection observer for viewport animation
+	       * @private
+	       */
+	      _setupIntersectionObserver() {
+	        const options = {
+	          root: null,
+	          // viewport
+	          rootMargin: '0px',
+	          threshold: 0.5 // 50% of the element is visible
+	        };
+	        this._observer = new IntersectionObserver(entries => {
+	          entries.forEach(entry => {
+	            if (entry.isIntersecting && !this._hasBeenInViewport) {
+	              this._isInViewport = this._hasBeenInViewport = true;
+
+	              // Start animation when in viewport
+	              if (this._config.animation && !ProgressBar.prefersReducedMotion) {
+	                const delay = this._config.delay || 0;
+	                setTimeout(() => {
+	                  this.animate(this._targetValue);
+	                }, delay);
+	              } else {
+	                this.setValue(this._targetValue);
+	              }
+
+	              // Disconnect observer once animation has started
+	              this._observer.disconnect();
+	            }
+	          });
+	        }, options);
+	        this._observer.observe(this._element);
+	      }
+
+	      /**
+	       * Get current progress value
+	       * @private
+	       * @returns {number} - Current percentage value (0-100)
+	       */
+	      _getCurrentValue() {
+	        if (this._isCircular) {
+	          const label = this._element.querySelector('.progress-label');
+	          return label ? parseInt(label.textContent, 10) : 0;
+	        } else {
+	          // Get the current width percentage
+	          const width = this._progressBar.style.width;
+	          if (width.indexOf('%') !== -1) {
+	            // If width is already in percentage
+	            return parseInt(width, 10);
+	          } else if (this._element.offsetWidth > 0) {
+	            // Calculate percentage based on pixel width
+	            const pixelWidth = parseFloat(width);
+	            return Math.round(pixelWidth / this._element.offsetWidth * 100);
+	          }
+	          return 0;
+	        }
+	      }
+
+	      /**
+	       * Set circular progress visual appearance
+	       * @private
+	       * @param {number} percent - Percentage value (0-100)
+	       */
+	      _setCircularProgress(percent) {
+	        const angle = percent * 3.6; // 3.6 = 360 / 100
+
+	        // Update the text percentage
+	        const textElement = this._element.querySelector('.progress-label');
+	        if (textElement) {
+	          textElement.textContent = `${percent}%`;
+	        }
+
+	        // Set the arc color based on context class
+	        let arcColor = 'var(--bs-primary)'; // Default primary blue
+	        const progressBar = this._progressBar;
+	        if (progressBar.classList.contains('bg-success')) {
+	          arcColor = 'var(--bs-success)';
+	        } else if (progressBar.classList.contains('bg-danger')) {
+	          arcColor = 'var(--bs-danger)';
+	        } else if (progressBar.classList.contains('bg-warning')) {
+	          arcColor = 'var(--bs-warning)';
+	        } else if (progressBar.classList.contains('bg-info')) {
+	          arcColor = 'var(--bs-info)';
+	        }
+
+	        // Use Bootstrap's native progress background variable
+	        const trackColor = 'var(--bs-progress-bg)';
+
+	        // Apply the conic gradient
+	        const progressElement = this._element.querySelector('.circle-progress');
+	        if (progressElement) {
+	          // Check for RTL direction
+	          const isRTL = window.getComputedStyle(this._element).direction === 'rtl';
+
+	          // Set the gradient (same pattern for both directions)
+	          progressElement.style.background = `conic-gradient(${arcColor} 0deg, ${arcColor} ${angle}deg, ${trackColor} ${angle}deg, ${trackColor} 360deg)`;
+
+	          // Use transform to control direction
+	          if (isRTL) {
+	            // For RTL: flip horizontally to reverse direction
+	            progressElement.style.transform = 'scaleX(-1)';
+	          } else {
+	            // For LTR: normal direction
+	            progressElement.style.transform = 'none';
+	          }
+	        }
+	      }
+
+	      /**
+	       * Set horizontal progress bar width
+	       * @private
+	       * @param {number} percent - Percentage value (0-100)
+	       */
+	      _setHorizontalProgress(percent) {
+	        this._progressBar.style.width = `${percent}%`;
+	      }
+
+	      /**
+	       * Check if animation should be disabled based on user preference
+	       * @private
+	       * @returns {boolean}
+	       */
+	      _shouldDisableAnimation() {
+	        return ProgressBar.prefersReducedMotion;
+	      }
+
+	      // Public methods
+	      /**
+	       * Initialize progress bar to 0%
+	       * @public
+	       * @returns {ProgressBar} - Returns this instance for chaining
+	       */
+	      initialize() {
+	        return this.setValue(0);
+	      }
+
+	      /**
+	       * Set value without animation
+	       * @public
+	       * @param {number} percent - Percentage value (0-100)
+	       * @returns {ProgressBar} - Returns this instance for chaining
+	       */
+	      setValue(percent) {
+	        percent = Math.min(Math.max(parseInt(percent, 10), 0), 100);
+	        this._isCircular ? this._setCircularProgress(percent) : this._setHorizontalProgress(percent);
+	        return this;
+	      }
+
+	      /**
+	       * Animate to target value
+	       * @public
+	       * @param {number|null} targetValue - Target percentage (0-100), or null to use aria-valuenow
+	       * @param {number|null} customDuration - Custom animation duration in ms, or null to use config
+	       * @returns {ProgressBar} - Returns this instance for chaining
+	       */
+	      animate() {
+	        let targetValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	        let customDuration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	        if (this._isAnimating) return this;
+	        const startValue = this._getCurrentValue();
+	        // If no target value is provided, use the one from aria-valuenow
+	        this._targetValue = targetValue !== null ? Math.min(Math.max(parseInt(targetValue, 10), 0), 100) : this._targetValue;
+	        if (startValue === this._targetValue) return this;
+	        if (ProgressBar.prefersReducedMotion) {
+	          this.setValue(this._targetValue);
+	          return this;
+	        }
+	        this._isAnimating = true;
+	        const startTime = performance.now(),
+	          duration = customDuration || this._config.duration;
+	        const animate = timestamp => {
+	          const progress = Math.min((timestamp - startTime) / duration, 1);
+	          this.setValue(Math.floor(startValue + progress * (this._targetValue - startValue)));
+	          if (progress < 1) window.requestAnimationFrame(animate);else this._isAnimating = false;
+	        };
+	        window.requestAnimationFrame(animate);
+	        return this;
+	      }
+
+	      /**
+	       * Dispose the progress bar instance
+	       * @public
+	       */
+	      dispose() {
+	        this._element.progressBar = undefined;
+	      }
+	    }
+
+	    /**
+	     * Initialize all progress bars that haven't been initialized yet
+	     */
+	    function initProgressBars() {
+	      document.querySelectorAll('.progress:not([data-bs-progress-initialized])').forEach(element => {
+	        const progress = new ProgressBar(element);
+	        if (!progress._config.animateInViewport) {
+	          progress.initialize();
+	          if (progress._config.animation && !ProgressBar.prefersReducedMotion) {
+	            setTimeout(() => progress.animate(progress._targetValue), progress._config.delay || 0);
+	          } else progress.setValue(progress._targetValue);
+	        } else progress.initialize();
+	      });
+	    }
+
+	    // Initialize progress bars on DOM content loaded
+	    document.addEventListener('DOMContentLoaded', initProgressBars);
+
+	    // Use MutationObserver to detect and initialize dynamically added progress bars
+	    const observer = new MutationObserver(mutations => {
+	      let shouldInit = false;
+	      for (const mutation of mutations) {
+	        if (mutation.type === 'childList') {
+	          for (const node of mutation.addedNodes) {
+	            if (node.nodeType === Node.ELEMENT_NODE && (node.matches('.progress:not([data-bs-progress-initialized])') || node.querySelector('.progress:not([data-bs-progress-initialized])'))) {
+	              shouldInit = true;
+	              break;
+	            }
+	          }
+	          if (shouldInit) break;
+	        }
+	      }
+	      if (shouldInit) {
+	        initProgressBars();
+	      }
+	    });
+
+	    // Start observing the document body for added progress bars
+	    observer.observe(document.body, {
+	      childList: true,
+	      subtree: true
+	    });
+	    return ProgressBar;
+	  });
+	})(bootstrapProgressExtension$1);
+	var bootstrapProgressExtensionExports = bootstrapProgressExtension$1.exports;
+	var bootstrapProgressExtension = /*@__PURE__*/getDefaultExportFromCjs(bootstrapProgressExtensionExports);
+
+	return bootstrapProgressExtension;
+
+}));

@@ -37,7 +37,7 @@ Include the CSS and JavaScript files in your project:
 <div class="progress" role="progressbar" aria-label="Basic example" 
      aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
      data-bs-config='{"duration": 2000}'>
-  <div class="progress-bar" style="width: 0%"></div>
+  <div class="progress-bar"></div>
 </div>
 ```
 
@@ -76,7 +76,7 @@ For RTL languages like Arabic, Hebrew, or Persian, simply wrap your progress bar
   <div class="progress" role="progressbar" aria-label="شريط التقدم"
        aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
        data-bs-config='{"duration": 1800}'>
-    <div class="progress-bar bg-success" style="width: 0%"></div>
+    <div class="progress-bar bg-success"></div>
   </div>
 </div>
 ```

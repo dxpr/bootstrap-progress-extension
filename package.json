@@ -7,7 +7,7 @@
   "sass": "src/scss/bootstrap-progress-bars.scss",
   "scripts": {
     "start": "npm run serve",
-    "serve": "http-server -p 8000",
+    "serve": "http-server -p 3123",
     "build": "npm run build:js && npm run build:scss",
     "build:js": "rollup -c",
     "build:scss": "sass src/scss/bootstrap-progress-bars.scss dist/css/bootstrap-progress-bars.css --style compressed && sass src/scss/bootstrap-progress-bars.scss dist/css/bootstrap-progress-bars.min.css --style compressed",

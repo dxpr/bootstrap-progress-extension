@@ -80,7 +80,7 @@ $progress-bar-label-size: 1.5rem !default;
   height: 100%;
   z-index: 2;
   border-radius: 50%;
-  transform: rotate(-90deg); // Start from the top instead of right
+  transform: rotate(0deg); // Start from the top instead of right
 
   &::before {
     content: '';

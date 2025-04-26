@@ -13,6 +13,8 @@ This package provides:
 - Multiple color variants (primary, success, info, warning, danger)
 - Stroke width customization for circular progress
 - Built-in accessibility features
+- Lightweight implementation (only ~325 lines of JS)
+- Support for dynamically added progress bars
 
 ## Installation
 
@@ -79,6 +81,29 @@ For RTL languages like Arabic, Hebrew, or Persian, simply wrap your progress bar
 </div>
 ```
 
+### Dynamic Creation
+
+Progress bars added dynamically to the DOM after page load will be automatically initialized:
+
+```javascript
+// Create a progress bar dynamically
+const progressBar = document.createElement('div');
+progressBar.className = 'progress';
+progressBar.setAttribute('role', 'progressbar');
+progressBar.setAttribute('aria-label', 'Dynamic progress');
+progressBar.setAttribute('aria-valuenow', '60');
+progressBar.setAttribute('aria-valuemin', '0');
+progressBar.setAttribute('aria-valuemax', '100');
+
+const bar = document.createElement('div');
+bar.className = 'progress-bar bg-success';
+bar.style.width = '0%';
+
+progressBar.appendChild(bar);
+document.body.appendChild(progressBar);
+// No manual initialization needed - MutationObserver will detect and initialize it
+```
+
 ## Configuration Options
 
 All progress components can be configured using the `data-bs-config` attribute with JSON:
@@ -86,6 +111,7 @@ All progress components can be configured using the `data-bs-config` attribute w
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `strokeWidth` | Number | `15` | Sets the stroke width in pixels for circular progress bars |
+| `size` | Number | `120` | Sets the size in pixels for circular progress bars |
 | `duration` | Number | `1500` | Animation duration in milliseconds |
 | `delay` | Number | `0` | Delay before animation starts in milliseconds |
 | `animation` | Boolean | `true` | Whether to animate the progress |
@@ -93,11 +119,12 @@ All progress components can be configured using the `data-bs-config` attribute w
 
 ## JavaScript API
 
-Get a progress bar instance:
+Working with progress bars programmatically:
 
 ```javascript
+// Create a new progress bar instance
 const progressElement = document.querySelector('.progress');
-const progressBar = ProgressBar.getInstance(progressElement);
+const progressBar = new ProgressBar(progressElement);
 
 // Set value without animation
 progressBar.setValue(75);
@@ -105,10 +132,8 @@ progressBar.setValue(75);
 // Animate to value (target percentage, optional duration)
 progressBar.animate(90, 2000);
 
-// Event listeners
-progressElement.addEventListener('animation.complete.bs.progressBar', (e) => {
-  console.log('Animation completed with value:', e.detail.value);
-});
+// Initialize to 0%
+progressBar.initialize();
 ```
 
 ## Accessibility Features
@@ -120,7 +145,6 @@ Bootstrap Progress Bars are built with accessibility in mind:
 - **Text Labels**: Circular progress bars include visible text labels showing the current progress percentage
 - **Color Contrast**: All components maintain proper contrast ratios between background, foreground, and text elements
 - **RTL Support**: Full support for right-to-left languages using the `dir="rtl"` attribute
-- **Keyboard Navigation**: The components can be controlled via JavaScript using keyboard-accessible controls
 - **Responsive Design**: Components adapt to different screen sizes for usability on mobile devices
 
 ## Browser Compatibility

@@ -59,6 +59,9 @@
       
       // Store instance in element's data
       element.progressBar = this;
+      
+      // Mark as initialized
+      element.setAttribute('data-bs-progress-initialized', 'true');
     }
 
     // Static properties
@@ -315,9 +318,11 @@
     dispose() { this._element.progressBar = undefined; }
   }
 
-  // Update the DOMContentLoaded handler
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.progress').forEach(element => {
+  /**
+   * Initialize all progress bars that haven't been initialized yet
+   */
+  function initProgressBars() {
+    document.querySelectorAll('.progress:not([data-bs-progress-initialized])').forEach(element => {
       const progress = new ProgressBar(element);
       if (!progress._config.animateInViewport) {
         progress.initialize();
@@ -326,7 +331,34 @@
         } else progress.setValue(progress._targetValue);
       } else progress.initialize();
     });
+  }
+
+  // Initialize progress bars on DOM content loaded
+  document.addEventListener('DOMContentLoaded', initProgressBars);
+  
+  // Use MutationObserver to detect and initialize dynamically added progress bars
+  const observer = new MutationObserver(mutations => {
+    let shouldInit = false;
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE && 
+              (node.matches('.progress:not([data-bs-progress-initialized])') || 
+               node.querySelector('.progress:not([data-bs-progress-initialized])'))) {
+            shouldInit = true;
+            break;
+          }
+        }
+        if (shouldInit) break;
+      }
+    }
+    if (shouldInit) {
+      initProgressBars();
+    }
   });
+  
+  // Start observing the document body for added progress bars
+  observer.observe(document.body, { childList: true, subtree: true });
 
   return ProgressBar;
 })); 

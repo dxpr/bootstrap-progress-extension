@@ -17,64 +17,46 @@ $progress-bar-label-size: 1.5rem !default;
 
 // Component Styles
 .progress {
-  // Default progress bar height
   height: $progress-bar-thin;
   background-color: var(--#{$prefix}progress-bg);
-}
 
-// Circular progress bar styles
-.progress.circular {
-  width: var(--circle-size, $progress-bar-circle-size);
-  height: var(--circle-size, $progress-bar-circle-size);
-  position: relative;
-  margin: 20px;
-  background: var(--#{$prefix}progress-bg);
-  overflow: visible;
-  border-radius: 50%;
-
-  @include media-breakpoint-down(sm) {
-    width: var(--circle-size, $progress-bar-circle-size * 0.8);
-    height: var(--circle-size, $progress-bar-circle-size * 0.8);
-    margin: 15px auto;
-  }
-
-  .progress-bar {
-    width: 100%;
-    height: 100%;
-    background: none;
+  // Circular progress bar styles
+  &.circular {
+    width: var(--circle-size, $progress-bar-circle-size);
+    height: var(--circle-size, $progress-bar-circle-size);
     position: relative;
+    margin: 20px;
+    overflow: visible;
     border-radius: 50%;
 
-    // Context-specific background colors
-    &.bg-success,
-    &.bg-danger,
-    &.bg-info {
-      .circle-background {
-        background-color: var(--#{$prefix}progress-bg);
-      }
-
-      .progress-label {
-        color: var(--#{$prefix}body-color);
-      }
+    @include media-breakpoint-down(sm) {
+      width: var(--circle-size, $progress-bar-circle-size * 0.8);
+      height: var(--circle-size, $progress-bar-circle-size * 0.8);
+      margin: 15px auto;
     }
 
-    // Light background needs dark text
-    &.bg-light .progress-label {
-      color: var(--#{$prefix}dark);
+    .progress-bar {
+      width: 100%;
+      height: 100%;
+      background: none;
+      position: relative;
+      border-radius: 50%;
+
+      // Context-specific background colors
+      &.bg-success,
+      &.bg-danger,
+      &.bg-info {
+        .progress-label {
+          color: var(--#{$prefix}body-color);
+        }
+      }
+
+      // Light background needs dark text
+      &.bg-light .progress-label {
+        color: var(--#{$prefix}dark);
+      }
     }
   }
-}
-
-// Base circle
-.circle-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: var(--#{$prefix}progress-bg);
-  display: none;
 }
 
 // Arc for the progress indicator
@@ -86,7 +68,6 @@ $progress-bar-label-size: 1.5rem !default;
   height: 100%;
   z-index: 2;
   border-radius: 50%;
-  transform: rotate(0deg); // Start from the top instead of right
 
   &::before {
     content: '';
@@ -112,6 +93,10 @@ $progress-bar-label-size: 1.5rem !default;
   font-weight: bold;
   z-index: 10;
   color: var(--#{$prefix}body-color);
+
+  @include media-breakpoint-down(sm) {
+    font-size: $progress-bar-label-size * 0.8;
+  }
 }
 
 // Title below progress bar
@@ -147,22 +132,15 @@ $progress-bar-label-size: 1.5rem !default;
     position: absolute;
     clip: rect(0, 0, 0, 0);
     pointer-events: none;
+    
+    &:checked + .btn-outline-secondary {
+      color: var(--#{$prefix}white);
+      background-color: var(--#{$prefix}secondary);
+      border-color: var(--#{$prefix}secondary);
+    }
   }
   
-  .btn-check:checked + .btn-outline-secondary {
-    color: var(--#{$prefix}white);
-    background-color: var(--#{$prefix}secondary);
-    border-color: var(--#{$prefix}secondary);
-  }
-}
-
-// Responsive adjustments
-@include media-breakpoint-down(sm) {
-  .progress-label {
-    font-size: $progress-bar-label-size * 0.8;
-  }
-  
-  .theme-switcher {
+  @include media-breakpoint-down(sm) {
     bottom: 0.5rem;
     right: 0.5rem;
     padding: 0.25rem;

@@ -267,12 +267,25 @@
       }
       
       // Use Bootstrap's native progress background variable
-      const trackColor = 'var(--bs-progress-bg)'; 
+      const trackColor = 'var(--bs-progress-bg)';
       
       // Apply the conic gradient
       const progressElement = this._element.querySelector('.circle-progress');
       if (progressElement) {
+        // Check for RTL direction
+        const isRTL = window.getComputedStyle(this._element).direction === 'rtl';
+        
+        // Set the gradient (same pattern for both directions)
         progressElement.style.background = `conic-gradient(${arcColor} 0deg, ${arcColor} ${angle}deg, ${trackColor} ${angle}deg, ${trackColor} 360deg)`;
+        
+        // Use transform to control direction
+        if (isRTL) {
+          // For RTL: flip horizontally to reverse direction
+          progressElement.style.transform = 'scaleX(-1)';
+        } else {
+          // For LTR: normal direction
+          progressElement.style.transform = 'none';
+        }
       }
     }
     

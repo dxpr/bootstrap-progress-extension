@@ -1,3 +1,7 @@
+[![npm version](https://img.shields.io/npm/v/bootstrap-progress-extension)](https://www.npmjs.com/package/bootstrap-progress-extension)
+[![npm downloads](https://img.shields.io/npm/dm/bootstrap-progress-extension)](https://www.npmjs.com/package/bootstrap-progress-extension)
+[![GitHub repo stars](https://img.shields.io/github/stars/dxpr/bootstrap-progress-extension?style=social)](https://github.com/dxpr/bootstrap-progress-extension)
+
 # Bootstrap Progress Bar Extension
 
 Enhanced progress components with circular progress and animations for Bootstrap 5.
@@ -5,10 +9,6 @@ Enhanced progress components with circular progress and animations for Bootstrap
 **[View Live Demo](https://dxpr.github.io/bootstrap-progress-extension/)**
 
 ![Demo of Bootstrap Progress Bar Extension](docs/images/progress-bar-extension2.gif)
-
-[![npm version](https://img.shields.io/npm/v/bootstrap-progress-extension)](https://www.npmjs.com/package/bootstrap-progress-extension)
-[![npm downloads](https://img.shields.io/npm/dm/bootstrap-progress-extension)](https://www.npmjs.com/package/bootstrap-progress-extension)
-[![GitHub repo stars](https://img.shields.io/github/stars/dxpr/bootstrap-progress-extension?style=social)](https://github.com/dxpr/bootstrap-progress-extension)
 
 ## Features
 

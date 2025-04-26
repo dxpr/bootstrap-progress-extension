@@ -35,6 +35,7 @@
     animation: true,
     delay: 0,
     strokeWidth: 15,
+    size: 120,  // Default size matching SCSS variable
     animateInViewport: true
   };
 

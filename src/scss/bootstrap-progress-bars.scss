@@ -32,6 +32,12 @@ $progress-bar-label-size: 1.5rem !default;
   overflow: visible;
   border-radius: 50%;
 
+  @include media-breakpoint-down(sm) {
+    width: var(--circle-size, $progress-bar-circle-size * 0.8);
+    height: var(--circle-size, $progress-bar-circle-size * 0.8);
+    margin: 15px auto;
+  }
+
   .progress-bar {
     width: 100%;
     height: 100%;
@@ -152,12 +158,6 @@ $progress-bar-label-size: 1.5rem !default;
 
 // Responsive adjustments
 @include media-breakpoint-down(sm) {
-  .progress.circular {
-    width: var(--circle-size, $progress-bar-circle-size * 0.8);
-    height: var(--circle-size, $progress-bar-circle-size * 0.8);
-    margin: 15px auto;
-  }
-
   .progress-label {
     font-size: $progress-bar-label-size * 0.8;
   }

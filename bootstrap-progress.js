@@ -21,8 +21,7 @@
         duration: 1500,
         easing: 'linear',
         animation: true,
-        delay: 0,
-        respectReducedMotion: true
+        delay: 0
       };
     }
     
@@ -108,12 +107,6 @@
         config.easing = element.getAttribute('data-bs-easing');
       }
       
-      // Check for respecting reduced motion preference
-      if (element.hasAttribute('data-bs-respect-reduced-motion')) {
-        const value = element.getAttribute('data-bs-respect-reduced-motion');
-        config.respectReducedMotion = value !== 'false';
-      }
-      
       return config;
     }
     
@@ -181,9 +174,9 @@
       this._element.dispatchEvent(event);
     }
 
-    // Check if animation should be disabled
+    // Check if animation should be disabled based on user preference
     _shouldDisableAnimation() {
-      return this._config.respectReducedMotion && Progress.prefersReducedMotion;
+      return Progress.prefersReducedMotion;
     }
     
     // Public methods
@@ -274,8 +267,8 @@
       
       progress.initialize();
       
-      // Check if animation is enabled based on config
-      if (progress._config.animation && !(progress._config.respectReducedMotion && Progress.prefersReducedMotion)) {
+      // Check if animation is enabled based on config and respect browser preferences
+      if (progress._config.animation && !Progress.prefersReducedMotion) {
         // Add delay based on index for staggered animation plus any configured delay
         const staggerDelay = index * 200;
         const configDelay = progress._config.delay || 0;

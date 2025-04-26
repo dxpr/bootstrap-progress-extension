@@ -130,7 +130,7 @@ All progress components can be configured using the `data-bs-config` attribute w
 | `size` | Number | `120` | Sets the size in pixels for circular progress bars |
 | `duration` | Number | `1500` | Animation duration in milliseconds |
 | `delay` | Number | `0` | Delay before animation starts in milliseconds |
-| `animation` | Boolean | `true` | Whether to animate the progress |
+| `animation` | Boolean | `false` | Whether to animate the progress. Set to `true` to enable animation. |
 | `animateInViewport` | Boolean | `true` | Only animate when the element enters the viewport |
 
 ## CSS Variables

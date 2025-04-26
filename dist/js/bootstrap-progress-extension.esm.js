@@ -26,7 +26,7 @@ var bootstrapProgressExtension$1 = {exports: {}};
       EVENT_KEY = `.${DATA_KEY}`;
     const Default = {
       duration: 1500,
-      animation: true,
+      animation: false,
       delay: 0,
       strokeWidth: 15,
       size: 120,

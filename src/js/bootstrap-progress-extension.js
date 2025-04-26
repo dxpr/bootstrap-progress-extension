@@ -13,7 +13,7 @@
   const NAME = 'progressBar', VERSION = '1.0.0', DATA_KEY = 'bs.progressBar', EVENT_KEY = `.${DATA_KEY}`;
   const Default = {
     duration: 1500,
-    animation: true,
+    animation: false,
     delay: 0,
     strokeWidth: 15,
     size: 120,

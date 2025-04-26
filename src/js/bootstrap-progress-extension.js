@@ -54,25 +54,25 @@
         if (this._config.strokeWidth) this._element.style.setProperty('--circle-thickness', `${this._config.strokeWidth}px`);
         if (this._config.size) this._element.style.setProperty('--circle-size', `${this._config.size}px`);
 
-        // Dynamically add required elements if they don't exist
-        if (!this._progressBar.querySelector('.circle-background')) {
-          const background = document.createElement('div');
-          background.className = 'circle-background';
-          background.setAttribute('aria-hidden', 'true'); // Hide decorative element
-          this._progressBar.appendChild(background);
-        }
-        if (!this._progressBar.querySelector('.circle-progress')) {
-          const progress = document.createElement('div');
-          progress.className = 'circle-progress';
-          progress.setAttribute('aria-hidden', 'true'); // Hide decorative element
-          this._progressBar.appendChild(progress);
-        }
-        if (!this._progressBar.querySelector('.progress-label')) {
-          const label = document.createElement('div');
-          label.className = 'progress-label';
-          // Initialize with 0% - it will be updated by setValue/animate
-          label.textContent = '0%'; 
-          this._progressBar.appendChild(label);
+        // Check if we've already processed this circular bar
+        if (!this._element.hasAttribute('data-bs-progress-processed')) {
+          
+          // Check if the user provided the mandatory progress label
+          const userLabel = this._progressBar.querySelector('.progress-label');
+          if (!userLabel) {
+            console.warn('[ProgressBar] Circular progress requires a `.progress-label` element inside `.progress-bar`.', this._element);
+          }
+          
+          // Add purely decorative elements using a template literal
+          const decorativeHTML = `
+            <div class="circle-background" aria-hidden="true"></div>
+            <div class="circle-progress" aria-hidden="true"></div>
+          `;
+          // Insert the HTML at the beginning of the progress bar element
+          this._progressBar.insertAdjacentHTML('afterbegin', decorativeHTML);
+          
+          // Mark as processed
+          this._element.setAttribute('data-bs-progress-processed', 'true');
         }
       }
 

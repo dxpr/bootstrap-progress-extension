@@ -115,4 +115,50 @@ All progress components can be configured using the `data-bs-config` attribute w
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `strokeWidth` | Number | `15` | Sets the stroke width in pixels for circular progress bars |
-| `size` | Number | `120`
+| `size` | Number | `120` | Sets the size in pixels for circular progress bars |
+| `duration` | Number | `1500` | Animation duration in milliseconds |
+| `delay` | Number | `0` | Delay before animation starts in milliseconds |
+| `animation` | Boolean | `true` | Whether to animate the progress |
+| `animateInViewport` | Boolean | `true` | Only animate when the element enters the viewport |
+
+## JavaScript API
+
+Working with progress bars programmatically:
+
+```javascript
+// Create a new progress bar instance
+const progressElement = document.querySelector('.progress');
+const progressBar = new ProgressBar(progressElement);
+
+// Set value without animation
+progressBar.setValue(75);
+
+// Animate to value (target percentage, optional duration)
+progressBar.animate(90, 2000);
+
+// Initialize to 0%
+progressBar.initialize();
+```
+
+## Accessibility Features
+
+Bootstrap Progress Bar Extension are built with accessibility in mind:
+
+- **ARIA Support**: All progress bars use proper ARIA attributes (`role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-label`)
+- **Reduced Motion**: Automatically respects the user's `prefers-reduced-motion` browser setting, disabling animations for users who prefer reduced motion
+- **Text Labels**: Circular progress bars include visible text labels showing the current progress percentage
+- **Color Contrast**: All components maintain proper contrast ratios between background, foreground, and text elements
+- **RTL Support**: Full support for right-to-left languages using the `dir="rtl"` attribute
+- **Responsive Design**: Components adapt to different screen sizes for usability on mobile devices
+
+## Browser Compatibility
+
+- Chrome/Edge 60+
+- Firefox 60+
+- Safari 12+
+- iOS 12+
+- Not compatible with Internet Explorer
+
+## License
+
+MIT

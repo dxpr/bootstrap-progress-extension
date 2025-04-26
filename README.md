@@ -29,6 +29,11 @@ npm install bootstrap-progress-extension
 Include the CSS and JavaScript files in your project:
 
 ```html
+<!-- For production -->
+<link href="path/to/bootstrap-progress-extension.min.css" rel="stylesheet">
+<script src="path/to/bootstrap-progress-extension.min.js"></script>
+
+<!-- For development/debugging -->
 <link href="path/to/bootstrap-progress-extension.css" rel="stylesheet">
 <script src="path/to/bootstrap-progress-extension.js"></script>
 ```

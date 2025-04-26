@@ -54,7 +54,6 @@
       }
 
       this._element = element;
-      this._config = this._getConfig(config);
       this._isCircular = element.classList.contains('circular');
       this._targetValue = parseInt(element.getAttribute('aria-valuenow') || '0', 10);
       this._isAnimating = false;
@@ -62,9 +61,10 @@
       this._isInViewport = false;
       this._hasBeenInViewport = false;
       
-      // Set circle stroke width if specified in config
-      if (this._isCircular && this._config.strokeWidth) {
-        this._applyStrokeWidth(this._config.strokeWidth);
+      // Get and apply configuration
+      this._config = this._getConfig(config);
+      if (this._isCircular) {
+        this._applyConfig(this._config);
       }
 
       // Set up intersection observer for viewport-based animation
@@ -453,6 +453,24 @@
           progress.initialize();
         }
       });
+    }
+
+    _applyConfig(config) {
+      // Apply stroke width if specified
+      if (config.strokeWidth) {
+        this._element.style.setProperty('--circle-thickness', `${config.strokeWidth}px`);
+      }
+
+      // Apply size if specified
+      if (config.size) {
+        this._element.style.setProperty('--circle-size', `${config.size}px`);
+      }
+      
+      // Store other config values
+      this._config = {
+        ...Default,
+        ...config
+      };
     }
   }
 

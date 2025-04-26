@@ -24,8 +24,8 @@ $progress-bar-label-size: 1.5rem !default;
 
 // Circular progress bar styles
 .progress.circular {
-  width: $progress-bar-circle-size;
-  height: $progress-bar-circle-size;
+  width: var(--circle-size, $progress-bar-circle-size);
+  height: var(--circle-size, $progress-bar-circle-size);
   position: relative;
   margin: 20px;
   background: var(--#{$prefix}progress-bg);
@@ -153,8 +153,8 @@ $progress-bar-label-size: 1.5rem !default;
 // Responsive adjustments
 @include media-breakpoint-down(sm) {
   .progress.circular {
-    width: $progress-bar-circle-size * 0.8;
-    height: $progress-bar-circle-size * 0.8;
+    width: var(--circle-size, $progress-bar-circle-size * 0.8);
+    height: var(--circle-size, $progress-bar-circle-size * 0.8);
     margin: 15px auto;
   }
 

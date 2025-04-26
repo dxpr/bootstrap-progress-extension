@@ -55,6 +55,17 @@
               </div>
               <div class="circular-title">15px stroke</div>
             </div>
+
+            <div class="text-center">
+              <div class="progress circular" role="progressbar" aria-label="Circular progress" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" data-bs-config='{"strokeWidth": 20, "size": 200}'>
+                <div class="progress-bar">
+                  <div class="circle-background"></div>
+                  <div class="circle-progress"></div>
+                  <div class="progress-label">75%</div>
+                </div>
+              </div>
+              <div class="circular-title">200px size</div>
+            </div>
           </div>
           
           <!-- Success -->
@@ -246,6 +257,7 @@
           <p>All progress components are configured using the <code>data-bs-config</code> attribute with JSON configuration:</p>
           <ul>
             <li><code>strokeWidth</code>: Sets the stroke width in pixels for circular progress bars (default: 15)</li>
+            <li><code>size</code>: Sets the size in pixels for circular progress bars (default: 120)</li>
             <li><code>duration</code>: Animation duration in milliseconds (default: 1500)</li>
             <li><code>delay</code>: Delay before animation starts in milliseconds (default: 0)</li>
             <li><code>animation</code>: Whether to animate the progress (default: true)</li>

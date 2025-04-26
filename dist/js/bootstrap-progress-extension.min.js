@@ -1,5 +1,5 @@
 /*!
- * bootstrap-progress-extension v1.0.0 (https://github.com/dxpr/bootstrap-progress-extension#readme)
+ * bootstrap-progress-extension v1.0.1 (https://github.com/dxpr/bootstrap-progress-extension#readme)
  * Copyright 2025 Jurriaan Roelofs
  * Licensed under MIT
  */

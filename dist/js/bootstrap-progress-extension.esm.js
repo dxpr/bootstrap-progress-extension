@@ -52,11 +52,41 @@ var bootstrapProgressExtension$1 = {exports: {}};
         this._isCircular = element.classList.contains('circular');
         this._progressBar = element.querySelector('.progress-bar');
 
+        // Ensure the progress bar element exists
+        if (!this._progressBar) {
+          // If no progress-bar exists, create a default one (though this shouldn't happen with standard Bootstrap markup)
+          this._progressBar = document.createElement('div');
+          this._progressBar.className = 'progress-bar';
+          element.appendChild(this._progressBar);
+          console.warn('[ProgressBar Constructor] Progress element was missing a .progress-bar child, one was created.', element);
+        }
+
         // Get and apply configuration first
         this._config = this._getConfig(config);
         if (this._isCircular) {
           if (this._config.strokeWidth) this._element.style.setProperty('--circle-thickness', `${this._config.strokeWidth}px`);
           if (this._config.size) this._element.style.setProperty('--circle-size', `${this._config.size}px`);
+
+          // Dynamically add required elements if they don't exist
+          if (!this._progressBar.querySelector('.circle-background')) {
+            const background = document.createElement('div');
+            background.className = 'circle-background';
+            background.setAttribute('aria-hidden', 'true'); // Hide decorative element
+            this._progressBar.appendChild(background);
+          }
+          if (!this._progressBar.querySelector('.circle-progress')) {
+            const progress = document.createElement('div');
+            progress.className = 'circle-progress';
+            progress.setAttribute('aria-hidden', 'true'); // Hide decorative element
+            this._progressBar.appendChild(progress);
+          }
+          if (!this._progressBar.querySelector('.progress-label')) {
+            const label = document.createElement('div');
+            label.className = 'progress-label';
+            // Initialize with 0% - it will be updated by setValue/animate
+            label.textContent = '0%';
+            this._progressBar.appendChild(label);
+          }
         }
 
         // Parse value from aria-valuenow attribute
@@ -224,46 +254,19 @@ var bootstrapProgressExtension$1 = {exports: {}};
       _setCircularProgress(percent) {
         const angle = percent * 3.6; // 3.6 = 360 / 100
 
+        // Set the CSS variable for the angle used by the CSS conic-gradient
+        const progressElement = this._element.querySelector('.circle-progress');
+        if (progressElement) {
+          progressElement.style.setProperty('--progress-angle', `${angle}deg`);
+        }
+
         // Update the text percentage
         const textElement = this._element.querySelector('.progress-label');
         if (textElement) {
           textElement.textContent = `${percent}%`;
         }
 
-        // Set the arc color based on context class
-        let arcColor = 'var(--bs-primary)'; // Default primary blue
-        const progressBar = this._progressBar;
-        if (progressBar.classList.contains('bg-success')) {
-          arcColor = 'var(--bs-success)';
-        } else if (progressBar.classList.contains('bg-danger')) {
-          arcColor = 'var(--bs-danger)';
-        } else if (progressBar.classList.contains('bg-warning')) {
-          arcColor = 'var(--bs-warning)';
-        } else if (progressBar.classList.contains('bg-info')) {
-          arcColor = 'var(--bs-info)';
-        }
-
-        // Use Bootstrap's native progress background variable
-        const trackColor = 'var(--bs-progress-bg)';
-
-        // Apply the conic gradient
-        const progressElement = this._element.querySelector('.circle-progress');
-        if (progressElement) {
-          // Check for RTL direction
-          const isRTL = window.getComputedStyle(this._element).direction === 'rtl';
-
-          // Set the gradient (same pattern for both directions)
-          progressElement.style.background = `conic-gradient(${arcColor} 0deg, ${arcColor} ${angle}deg, ${trackColor} ${angle}deg, ${trackColor} 360deg)`;
-
-          // Use transform to control direction
-          if (isRTL) {
-            // For RTL: flip horizontally to reverse direction
-            progressElement.style.transform = 'scaleX(-1)';
-          } else {
-            // For LTR: normal direction
-            progressElement.style.transform = 'none';
-          }
-        }
+        // Color and background gradient are now handled by CSS using --arc-color and --progress-angle variables
       }
 
       /**
@@ -302,6 +305,9 @@ var bootstrapProgressExtension$1 = {exports: {}};
        */
       setValue(percent) {
         percent = Math.min(Math.max(parseInt(percent, 10), 0), 100);
+        // Update the ARIA attribute for accessibility
+        this._element.setAttribute('aria-valuenow', percent);
+        // Update visual representation
         this._isCircular ? this._setCircularProgress(percent) : this._setHorizontalProgress(percent);
         return this;
       }
@@ -357,7 +363,10 @@ var bootstrapProgressExtension$1 = {exports: {}};
           if (progress._config.animation && !ProgressBar.prefersReducedMotion) {
             setTimeout(() => progress.animate(progress._targetValue), progress._config.delay || 0);
           } else progress.setValue(progress._targetValue);
-        } else progress.initialize();
+        } else {
+          // Initialize to 0 even if waiting for viewport, ensures label exists
+          progress.initialize();
+        }
       });
     }
 

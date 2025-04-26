@@ -42,17 +42,24 @@ $progress-bar-label-size: 1.5rem !default;
       position: relative;
       border-radius: 50%;
 
-      // Context-specific background colors
-      &.bg-success,
-      &.bg-danger,
-      &.bg-info {
-        .progress-label {
-          color: var(--#{$prefix}body-color);
-        }
+      // Define default arc color
+      --arc-color: var(--#{$prefix}primary);
+
+      // Override arc color based on background class
+      &.bg-success { --arc-color: var(--#{$prefix}success); }
+      &.bg-danger  { --arc-color: var(--#{$prefix}danger);  }
+      &.bg-warning { --arc-color: var(--#{$prefix}warning); }
+      &.bg-info    { --arc-color: var(--#{$prefix}info);    }
+      // Add other variants as needed (e.g., secondary, light, dark)
+
+      // Context-specific label colors (moved slightly for clarity)
+      &.bg-success .progress-label,
+      &.bg-danger .progress-label,
+      &.bg-info .progress-label {
+        color: var(--#{$prefix}body-color); // Ensure label contrast on colored backgrounds
       }
 
-      // Light background needs dark text
-      &.bg-light .progress-label {
+      &.bg-light .progress-label { // Example for light bg needing dark text
         color: var(--#{$prefix}dark);
       }
     }
@@ -68,6 +75,19 @@ $progress-bar-label-size: 1.5rem !default;
   height: 100%;
   z-index: 2;
   border-radius: 50%;
+
+  // Apply the conic gradient using inherited --arc-color and --progress-angle
+  background: conic-gradient(
+    var(--arc-color) 0deg, 
+    var(--arc-color) var(--progress-angle, 0deg), 
+    var(--#{$prefix}progress-bg) var(--progress-angle, 0deg), 
+    var(--#{$prefix}progress-bg) 360deg
+  );
+
+  // Apply horizontal flip for RTL direction
+  [dir="rtl"] & {
+    transform: scaleX(-1);
+  }
 
   &::before {
     content: '';

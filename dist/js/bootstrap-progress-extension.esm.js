@@ -160,7 +160,7 @@ var bootstrapProgressExtension$1 = {exports: {}};
        * @returns {Object} - Complete configuration
        */
       _getConfig(config) {
-        // Get base config with defaults
+        // Start with default values
         let result = {
           ...Default
         };
@@ -175,11 +175,42 @@ var bootstrapProgressExtension$1 = {exports: {}};
               ...configJSON
             };
           } catch (e) {
-            console.error('Error parsing data-bs-config attribute:', e);
+            console.error('Error parsing data-bs-config attribute:', e, this._element);
           }
         }
 
-        // Finally, add direct JS config options (highest precedence)
+        // Process individual data-bs-* attributes (overriding data-bs-config and defaults)
+        Object.keys(Default).forEach(key => {
+          // Construct kebab-case attribute name (e.g., data-bs-stroke-width)
+          const attrName = `data-bs-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+          if (this._element.hasAttribute(attrName)) {
+            const attrValue = this._element.getAttribute(attrName);
+
+            // Type conversion based on key
+            switch (key) {
+              case 'duration':
+              case 'delay':
+              case 'strokeWidth':
+              case 'size':
+                const num = parseInt(attrValue, 10);
+                if (!isNaN(num)) {
+                  result[key] = num; // Assign parsed number if valid
+                } else {
+                  console.warn(`Invalid value "${attrValue}" for attribute ${attrName}. Using default or previously set value.`, this._element);
+                }
+                break;
+              case 'animation':
+              case 'animateInViewport':
+                // Attribute presence means true, unless its value is explicitly "false"
+                // An empty string value for the attribute also evaluates to true here.
+                result[key] = attrValue !== 'false';
+                break;
+              // No default needed as we only process known keys from Default
+            }
+          }
+        });
+
+        // Finally, merge direct JS config options (highest precedence)
         result = {
           ...result,
           ...(config || {})

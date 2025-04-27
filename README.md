@@ -15,13 +15,16 @@ Enhanced progress components with circular progress and animations for Bootstrap
 This package provides:
 
 - Standard Bootstrap Progress Bar Extension with animation
-- Custom circular progress bars 
+- Custom circular progress bars with animation
 - Viewport-based animation triggers
 - Configurable animation duration and delays
-- Multiple color variants (primary, success, info, warning, danger)
-- Stroke width customization for circular progress
-- Built-in accessibility features
-- Lightweight implementation (only ~325 lines of JS)
+- Two configuration methods:
+  - Individual `data-bs-*` attributes (Recommended, aligns with Bootstrap)
+  - Single `data-bs-config` JSON attribute (Legacy)
+- Multiple color variants (primary, success, info, warning, danger, etc.)
+- Stroke width and size customization for circular progress
+- Built-in accessibility features (ARIA, reduced motion)
+- Lightweight implementation
 - Support for dynamically added progress bars
 
 ## Installation
@@ -44,54 +47,73 @@ Include the CSS and JavaScript files in your project:
 
 ## Usage
 
+Progress bars are configured primarily using data attributes. You can use individual attributes (recommended) or a single JSON attribute.
+
+**Precedence:** JavaScript constructor options > Individual `data-bs-*` attributes > `data-bs-config` JSON > Defaults.
+
 ### Basic Progress Bar
 
 ```html
-<div class="progress" role="progressbar" aria-label="Basic example" 
+<!-- Using individual attributes (Recommended) -->
+<div class="progress" role="progressbar" aria-label="Basic example"
      aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
-     data-bs-config='{"duration": 2000}'>
+     data-bs-duration="2000" data-bs-animation>
   <div class="progress-bar"></div>
+</div>
+
+<!-- Using JSON attribute -->
+<div class="progress" role="progressbar" aria-label="Basic example (JSON)"
+     aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
+     data-bs-config='{"duration": 2500, "animation": true}'>
+  <div class="progress-bar bg-info"></div>
 </div>
 ```
 
 ### Circular Progress Bar
 
-- Note: The `<div class="progress-label">...</div>` element is required within the `.progress-bar` for circular progress bars.
-**Important:** For circular progress bars, you only need to include the standard `.progress` and `.progress-bar` elements, along with a `<div class="progress-label">...%</div>` inside the `.progress-bar`. 
-The decorative `<div class="circle-background"></div>` and `<div class="circle-progress"></div>` elements will be **automatically injected** by the script. **Do not include them in your source HTML.**
+**Important:** For circular progress bars, include the standard `.progress.circular` and `.progress-bar` elements, along with a `<div class="progress-label">...%</div>` inside the `.progress-bar`. The script automatically injects the necessary decorative elements (`.circle-background`, `.circle-progress`). **Do not include them in your source HTML.**
 
 ```html
+<!-- Using individual attributes (Recommended) -->
 <div class="progress circular" role="progressbar" aria-label="Circular progress"
      aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
-     data-bs-config='{"strokeWidth": 15, "animateInViewport": true}'>
+     data-bs-stroke-width="15" data-bs-animate-in-viewport="true" data-bs-animation>
   <div class="progress-bar bg-success">
     <div class="progress-label">75%</div>
-    <!-- .circle-background and .circle-progress will be added here by the script -->
+    <!-- .circle-background and .circle-progress are added here -->
+  </div>
+</div>
+
+<!-- Using JSON attribute -->
+<div class="progress circular" role="progressbar" aria-label="Circular progress (JSON)"
+     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+     data-bs-config='{"strokeWidth": 10, "size": 150, "animation": true}'>
+  <div class="progress-bar bg-danger">
+    <div class="progress-label">60%</div>
+    <!-- .circle-background and .circle-progress are added here -->
   </div>
 </div>
 ```
 
 ### RTL Support (Right-to-Left)
 
-For RTL languages like Arabic, Hebrew, or Persian, simply wrap your progress bar in a container with `dir="rtl"`:
+Wrap your progress bar in a container with `dir="rtl"`. Configuration works the same way.
 
 ```html
 <div dir="rtl">
-  <!-- Circular Progress in RTL -->
+  <!-- Circular Progress in RTL (Individual Attrs) -->
   <div class="progress circular" role="progressbar" aria-label="تقدم دائري"
        aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"
-       data-bs-config='{"strokeWidth": 15, "duration": 2000}'>
+       data-bs-stroke-width="15" data-bs-duration="2000" data-bs-animation>
     <div class="progress-bar bg-primary">
-      <div class="circle-background"></div>
-      <div class="circle-progress"></div>
       <div class="progress-label">٦٥٪</div>
     </div>
   </div>
-  
-  <!-- Standard Progress Bar in RTL -->
+
+  <!-- Standard Progress Bar in RTL (Individual Attrs) -->
   <div class="progress" role="progressbar" aria-label="شريط التقدم"
        aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
-       data-bs-config='{"duration": 1800}'>
+       data-bs-duration="1800" data-bs-animation>
     <div class="progress-bar bg-success"></div>
   </div>
 </div>
@@ -116,22 +138,30 @@ bar.className = 'progress-bar bg-success';
 bar.style.width = '0%';
 
 progressBar.appendChild(bar);
+// Example of setting individual attributes dynamically
+progressBar.setAttribute('data-bs-animation', 'true');
+progressBar.setAttribute('data-bs-duration', '1000');
 document.body.appendChild(progressBar);
 // No manual initialization needed - MutationObserver will detect and initialize it
 ```
 
 ## Configuration Options
 
-All progress components can be configured using the `data-bs-config` attribute with JSON:
+Configuration can be set via data attributes. Individual `data-bs-*` attributes are recommended.
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `strokeWidth` | Number | `15` | Sets the stroke width in pixels for circular progress bars |
-| `size` | Number | `120` | Sets the size in pixels for circular progress bars |
-| `duration` | Number | `1500` | Animation duration in milliseconds |
-| `delay` | Number | `0` | Delay before animation starts in milliseconds |
-| `animation` | Boolean | `false` | Whether to animate the progress. Set to `true` to enable animation. |
-| `animateInViewport` | Boolean | `true` | Only animate when the element enters the viewport |
+**Precedence:** JavaScript constructor options > Individual `data-bs-*` attributes > `data-bs-config` JSON > Defaults.
+
+| Attribute / Option      | Type    | Default | Description |
+|-------------------------|---------|---------|-------------|
+| `data-bs-stroke-width`  | Number  | `15`    | (Circular only) Stroke width in pixels. Corresponds to `strokeWidth` JS/JSON option. |
+| `data-bs-size`          | Number  | `120`   | (Circular only) Size in pixels. Corresponds to `size` JS/JSON option. |
+| `data-bs-duration`      | Number  | `1500`  | Animation duration in milliseconds. Corresponds to `duration` JS/JSON option. |
+| `data-bs-delay`         | Number  | `0`     | Delay before animation starts in milliseconds. Corresponds to `delay` JS/JSON option. |
+| `data-bs-animation`     | Boolean | `true`  | Enable animation. Omit or set `="false"` to disable. Corresponds to `animation` JS/JSON option. |
+| `data-bs-animate-in-viewport` | Boolean | `true` | Only animate when the element enters the viewport. Set `="false"` to disable. Corresponds to `animateInViewport` JS/JSON option. |
+| `data-bs-config`        | String  | `null`  | (Legacy) A JSON string containing multiple options (e.g., `'{"strokeWidth": 10, "animation": true}'`). |
+
+**Note:** For boolean attributes like `data-bs-animation`, simply adding the attribute implies `true`. You only need to add `="false"` to explicitly disable it.
 
 ## CSS Variables
 
@@ -144,7 +174,7 @@ The appearance of the circular progress bars can be customized using the followi
 | `--arc-color`        | The color of the progress arc. Determined by `bg-*` classes.                | `var(--bs-progress-bar-bg)` | `bg-*` CSS class        |
 | `--progress-angle`   | The calculated angle (0-360deg) representing the current progress visually. | `0deg`        | JavaScript (`setValue`) |
 
-**Note:** While `--arc-color` and `--progress-angle` are used internally, you typically control the appearance via the `data-bs-config` options (`size`, `strokeWidth`) and standard Bootstrap background utility classes (`bg-primary`, `bg-success`, etc.) rather than setting these CSS variables directly.
+**Note:** While `--arc-color` and `--progress-angle` are used internally, you typically control the appearance via configuration options (`data-bs-size`, `data-bs-stroke-width`) and standard Bootstrap background utility classes (`bg-primary`, `bg-success`, etc.) rather than setting these CSS variables directly.
 
 ### Bootstrap Variable Usage
 

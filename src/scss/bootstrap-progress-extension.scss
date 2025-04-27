@@ -78,11 +78,16 @@ $progress-bar-label-size: 1.5rem !default;
 
   // Apply the conic gradient using inherited --arc-color and --progress-angle
   background: conic-gradient(
-    var(--arc-color) 0deg, 
-    var(--arc-color) var(--progress-angle, 0deg), 
-    var(--#{$prefix}progress-bg) var(--progress-angle, 0deg), 
+    var(--arc-color) 0deg,
+    var(--arc-color) var(--progress-angle, 0deg),
+    var(--#{$prefix}progress-bg) var(--progress-angle, 0deg),
     var(--#{$prefix}progress-bg) 360deg
   );
+
+  // Add transition for smooth animation (respects prefers-reduced-motion)
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background 0.1s linear; // Use a short duration, JS controls timing
+  }
 
   // Apply horizontal flip for RTL direction
   [dir="rtl"] & {

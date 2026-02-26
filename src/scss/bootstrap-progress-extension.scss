@@ -96,14 +96,14 @@ $progress-bar-label-size: 1.5rem !default;
   }
 
   -webkit-mask-image: radial-gradient(
-    circle,
-    transparent calc(50% - var(--circle-thickness, $progress-bar-circle-thickness)),
-    black calc(50% - var(--circle-thickness, $progress-bar-circle-thickness))
+    circle closest-side,
+    transparent calc(100% - var(--circle-thickness, $progress-bar-circle-thickness)),
+    black calc(100% - var(--circle-thickness, $progress-bar-circle-thickness))
   );
   mask-image: radial-gradient(
-    circle,
-    transparent calc(50% - var(--circle-thickness, $progress-bar-circle-thickness)),
-    black calc(50% - var(--circle-thickness, $progress-bar-circle-thickness))
+    circle closest-side,
+    transparent calc(100% - var(--circle-thickness, $progress-bar-circle-thickness)),
+    black calc(100% - var(--circle-thickness, $progress-bar-circle-thickness))
   );
 }
 

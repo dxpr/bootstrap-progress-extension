@@ -1,6 +1,6 @@
 {
   "name": "bootstrap-progress-extension",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Enhanced progress components with circular progress and animations for Bootstrap 5",
   "main": "dist/js/bootstrap-progress-extension.js",
   "style": "dist/css/bootstrap-progress-extension.css",

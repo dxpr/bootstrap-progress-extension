@@ -28,6 +28,7 @@ $progress-bar-label-size: 1.5rem !default;
     margin: 20px;
     overflow: visible;
     border-radius: 50%;
+    background: transparent !important;
 
     @include media-breakpoint-down(sm) {
       width: var(--circle-size, $progress-bar-circle-size * 0.8);
@@ -38,7 +39,7 @@ $progress-bar-label-size: 1.5rem !default;
     .progress-bar {
       width: 100%;
       height: 100%;
-      background: none;
+      background: transparent !important;
       position: relative;
       border-radius: 50%;
 

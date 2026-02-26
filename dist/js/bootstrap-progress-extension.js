@@ -1,6 +1,6 @@
 /*!
- * bootstrap-progress-extension v1.0.1 (https://github.com/dxpr/bootstrap-progress-extension#readme)
- * Copyright 2025 Jurriaan Roelofs
+ * bootstrap-progress-extension v1.0.2 (https://github.com/dxpr/bootstrap-progress-extension#readme)
+ * Copyright 2026 Jurriaan Roelofs
  * Licensed under MIT
  */
 (function (global, factory) {
@@ -49,8 +49,7 @@
 	       * @param {HTMLElement} element - The target element
 	       * @param {Object} config - Configuration options
 	       */
-	      constructor(element) {
-	        let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	      constructor(element, config = {}) {
 	        if (!element) {
 	          throw new Error('Element must be provided to ProgressBar constructor');
 	        }
@@ -81,16 +80,19 @@
 	              console.warn('[ProgressBar] Circular progress requires a `.progress-label` element inside `.progress-bar`.', this._element);
 	            }
 
-	            // Add purely decorative elements using a template literal
-	            const decorativeHTML = `
-            <div class="circle-background" aria-hidden="true"></div>
-            <div class="circle-progress" aria-hidden="true"></div>
-          `;
-	            // Insert the HTML at the beginning of the progress bar element
-	            this._progressBar.insertAdjacentHTML('afterbegin', decorativeHTML);
+	            // Add decorative SVG circles for transparent circular progress rendering.
+	            this._progressBar.insertAdjacentHTML('afterbegin', this._buildCircularSvgMarkup());
 
 	            // Mark as processed
 	            this._element.setAttribute('data-bs-progress-processed', 'true');
+	          }
+	          this._circleProgressElement = this._element.querySelector('.circle-progress-indicator');
+	          this._circleCircumference = 0;
+	          if (this._circleProgressElement) {
+	            const radius = parseFloat(this._circleProgressElement.getAttribute('r')) || 0;
+	            this._circleCircumference = 2 * Math.PI * radius;
+	            this._circleProgressElement.style.strokeDasharray = `${this._circleCircumference}`;
+	            this._circleProgressElement.style.strokeDashoffset = `${this._circleCircumference}`;
 	          }
 	        }
 
@@ -225,6 +227,26 @@
 	      }
 
 	      /**
+	       * Build decorative SVG markup for circular progress rendering
+	       * @private
+	       * @returns {string} - SVG markup string
+	       */
+	      _buildCircularSvgMarkup() {
+	        const configuredSize = parseInt(this._config.size, 10);
+	        const size = Number.isFinite(configuredSize) && configuredSize > 0 ? configuredSize : Default.size;
+	        const configuredStrokeWidth = parseInt(this._config.strokeWidth, 10);
+	        const strokeWidth = Number.isFinite(configuredStrokeWidth) && configuredStrokeWidth > 0 ? Math.min(configuredStrokeWidth, size) : Default.strokeWidth;
+	        const center = size / 2;
+	        const radius = Math.max(center - strokeWidth / 2, 0);
+	        return `
+        <svg class="circle-progress-svg" aria-hidden="true" focusable="false" viewBox="0 0 ${size} ${size}">
+          <circle class="circle-progress-track" cx="${center}" cy="${center}" r="${radius}"></circle>
+          <circle class="circle-progress-indicator" cx="${center}" cy="${center}" r="${radius}"></circle>
+        </svg>
+      `;
+	      }
+
+	      /**
 	       * Set up intersection observer for viewport animation
 	       * @private
 	       */
@@ -288,12 +310,9 @@
 	       * @param {number} percent - Percentage value (0-100)
 	       */
 	      _setCircularProgress(percent) {
-	        const angle = percent * 3.6; // 3.6 = 360 / 100
-
-	        // Set the CSS variable for the angle used by the CSS conic-gradient
-	        const progressElement = this._element.querySelector('.circle-progress');
-	        if (progressElement) {
-	          progressElement.style.setProperty('--progress-angle', `${angle}deg`);
+	        if (this._circleProgressElement && this._circleCircumference > 0) {
+	          const dashOffset = this._circleCircumference * (1 - percent / 100);
+	          this._circleProgressElement.style.strokeDashoffset = `${dashOffset}`;
 	        }
 
 	        // Update the text percentage
@@ -301,8 +320,6 @@
 	        if (textElement) {
 	          textElement.textContent = `${percent}%`;
 	        }
-
-	        // Color and background gradient are now handled by CSS using --arc-color and --progress-angle variables
 	      }
 
 	      /**
@@ -355,9 +372,7 @@
 	       * @param {number|null} customDuration - Custom animation duration in ms, or null to use config
 	       * @returns {ProgressBar} - Returns this instance for chaining
 	       */
-	      animate() {
-	        let targetValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	        let customDuration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	      animate(targetValue = null, customDuration = null) {
 	        if (this._isAnimating) return this;
 	        const startValue = this._getCurrentValue();
 	        // If no target value is provided, use the one from aria-valuenow

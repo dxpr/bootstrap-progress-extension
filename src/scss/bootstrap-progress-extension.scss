@@ -94,16 +94,16 @@ $progress-bar-label-size: 1.5rem !default;
     transform: scaleX(-1);
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: var(--circle-thickness, $progress-bar-circle-thickness);
-    left: var(--circle-thickness, $progress-bar-circle-thickness);
-    right: var(--circle-thickness, $progress-bar-circle-thickness);
-    bottom: var(--circle-thickness, $progress-bar-circle-thickness);
-    background: var(--#{$prefix}body-bg);
-    border-radius: 50%;
-  }
+  -webkit-mask-image: radial-gradient(
+    circle,
+    transparent calc(50% - var(--circle-thickness, $progress-bar-circle-thickness)),
+    black calc(50% - var(--circle-thickness, $progress-bar-circle-thickness))
+  );
+  mask-image: radial-gradient(
+    circle,
+    transparent calc(50% - var(--circle-thickness, $progress-bar-circle-thickness)),
+    black calc(50% - var(--circle-thickness, $progress-bar-circle-thickness))
+  );
 }
 
 // Text label

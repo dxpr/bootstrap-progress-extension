@@ -14,6 +14,8 @@ $progress-bar-thin: 5px !default;
 $progress-bar-thick: 15px !default;
 $progress-bar-circle-size: 120px !default;
 $progress-bar-label-size: 1.5rem !default;
+$progress-bar-info-size: 1rem !default;
+$progress-bar-line-height: 1.5 !default;
 
 // Component Styles
 .progress {
@@ -119,9 +121,48 @@ $progress-bar-label-size: 1.5rem !default;
   font-weight: bold;
   z-index: 10;
   color: var(--#{$prefix}body-color);
+  line-height: var(--bs-body-line-height, $progress-bar-line-height);
 
   @include media-breakpoint-down(sm) {
     font-size: $progress-bar-label-size * 0.8;
+  }
+}
+
+.progress-content {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+  font-size: var(--circle-label-size, $progress-bar-label-size);
+  font-weight: bold;
+  z-index: 10;
+  color: var(--#{$prefix}body-color);
+  line-height: var(--bs-body-line-height, $progress-bar-line-height);
+
+  @include media-breakpoint-down(sm) {
+    font-size: calc(var(--circle-label-size, #{$progress-bar-label-size}) * 0.8);
+  }
+  .progress-title {
+    display: flex;
+    justify-content: center;
+    align-items: anchor-center;
+
+    i {
+      font-size: var(--circle-icon-size, $progress-bar-label-size);
+      color: var(--circle-icon-color, --#{$prefix}body-color);
+  
+      @include media-breakpoint-down(sm) {
+        font-size: calc(var(--circle-icon-size, #{$progress-bar-label-size}) * 0.8);
+      }
+    }
+  }
+ 
+  .progress-info {
+    font-size: var(--circle-info-size, $progress-bar-info-size);
+    color: var(--#{$prefix}secondary-color);
+    font-weight: 400;
   }
 }
 

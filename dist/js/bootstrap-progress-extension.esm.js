@@ -1,6 +1,6 @@
 /*!
- * bootstrap-progress-extension v1.0.1 (https://github.com/dxpr/bootstrap-progress-extension#readme)
- * Copyright 2025 Jurriaan Roelofs
+ * bootstrap-progress-extension v1.0.3 (https://github.com/dxpr/bootstrap-progress-extension#readme)
+ * Copyright 2026 Jurriaan Roelofs
  * Licensed under MIT
  */
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -43,8 +43,7 @@ var bootstrapProgressExtension$1 = {exports: {}};
        * @param {HTMLElement} element - The target element
        * @param {Object} config - Configuration options
        */
-      constructor(element) {
-        let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      constructor(element, config = {}) {
         if (!element) {
           throw new Error('Element must be provided to ProgressBar constructor');
         }
@@ -69,12 +68,6 @@ var bootstrapProgressExtension$1 = {exports: {}};
 
           // Check if we've already processed this circular bar
           if (!this._element.hasAttribute('data-bs-progress-processed')) {
-            // Check if the user provided the mandatory progress label
-            const userLabel = this._progressBar.querySelector('.progress-label');
-            if (!userLabel) {
-              console.warn('[ProgressBar] Circular progress requires a `.progress-label` element inside `.progress-bar`.', this._element);
-            }
-
             // Add purely decorative elements using a template literal
             const decorativeHTML = `
             <div class="circle-background" aria-hidden="true"></div>
@@ -335,8 +328,6 @@ var bootstrapProgressExtension$1 = {exports: {}};
        */
       setValue(percent) {
         percent = Math.min(Math.max(parseInt(percent, 10), 0), 100);
-        // Update the ARIA attribute for accessibility
-        this._element.setAttribute('aria-valuenow', percent);
         // Update visual representation
         this._isCircular ? this._setCircularProgress(percent) : this._setHorizontalProgress(percent);
         return this;
@@ -349,9 +340,7 @@ var bootstrapProgressExtension$1 = {exports: {}};
        * @param {number|null} customDuration - Custom animation duration in ms, or null to use config
        * @returns {ProgressBar} - Returns this instance for chaining
        */
-      animate() {
-        let targetValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        let customDuration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      animate(targetValue = null, customDuration = null) {
         if (this._isAnimating) return this;
         const startValue = this._getCurrentValue();
         // If no target value is provided, use the one from aria-valuenow

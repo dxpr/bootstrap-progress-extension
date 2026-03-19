@@ -56,13 +56,6 @@
 
         // Check if we've already processed this circular bar
         if (!this._element.hasAttribute('data-bs-progress-processed')) {
-          
-          // Check if the user provided the mandatory progress label
-          const userLabel = this._progressBar.querySelector('.progress-label');
-          if (!userLabel) {
-            console.warn('[ProgressBar] Circular progress requires a `.progress-label` element inside `.progress-bar`.', this._element);
-          }
-          
           // Add purely decorative elements using a template literal
           const decorativeHTML = `
             <div class="circle-background" aria-hidden="true"></div>
@@ -312,8 +305,6 @@
      */
     setValue(percent) {
       percent = Math.min(Math.max(parseInt(percent, 10), 0), 100);
-      // Update the ARIA attribute for accessibility
-      this._element.setAttribute('aria-valuenow', percent);
       // Update visual representation
       this._isCircular ? this._setCircularProgress(percent) : this._setHorizontalProgress(percent);
       return this;
